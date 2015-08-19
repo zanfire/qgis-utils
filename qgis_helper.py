@@ -31,7 +31,7 @@ def compute_SV(feature):
     perimeter = geom.length()
     height = feature[FIELD_VOLUME_HEIGHT]
     #print("Compute S/V: area " + str(base_area) + ", perimeter " + str(perimeter) + " height " + str(height))
-    S = base_area * 2 + perimeter * height
+    S = base_area * 2 + perimeter * height 
     V = base_area * height
     SV = S / V
     #print("Compute S/V: " + str(S) + " / " + str(V) + " = " + str(SV))
@@ -45,7 +45,7 @@ def compute_SVmultiple(features, neighbors):
     # hum ...
     # I need to compute the part of perimeter that it is in common
 
-    total_len = 0
+    total_wall = 0
     total_area = 0
     total_vol = 0
     geometries = []
@@ -53,17 +53,25 @@ def compute_SVmultiple(features, neighbors):
         g = features[uuid].geometry()
         total_area += g.area()
         height = features[uuid][FIELD_VOLUME_HEIGHT]
-        total_vol = g.area() * height
-        total_len = g.length()
+        total_vol += g.area() * height
+        total_wall += g.length() * height
         geometries.append(g)
     
     # Remove from length the common parts.
-    for g in geometries:
-        for neested in geometries:
+    for i in range(0, len(geometries)):
+        g = geometries[i]
+        for x in range(i, len(geometries)):
+            neested = geometries[x]
             if not g.equals(neested) and not g.disjoint(neested):
                 intersection = g.intersection(neested)
+                h1 = features[neighbors[i]][FIELD_VOLUME_HEIGHT]
+                h2 = features[neighbors[x]][FIELD_VOLUME_HEIGHT]
+                if h1 < h2:
+                    total_wall -= intersection.length() * h1
+                else:
+                    total_wall -= intersection.length() * h2
                 print("Geometry 1 len: " + str(g.length()) + " geometry 2 len: " + str(neested.length()) + " intersection len: " + str(intersection.length()))
-    return total_vol
+    return (total_area * 2 + total_wall) / total_vol
 
 def list_neighbors(index, features, feature):
     geom = feature.geometry()

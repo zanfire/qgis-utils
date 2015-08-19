@@ -75,6 +75,14 @@ def show_neighbors(skip):
             break
         idx += 1
 
+def show_features(layer, features, neighbors):
+    selection = []
+    for x in neighbors:
+        selection.append(features[x].id())
+    layer.setSelectedFeatures(selection)
+    box = layer.boundingBoxOfSelected()
+    iface.mapCanvas().setExtent(box)
+    iface.mapCanvas().refresh()
 
 def compute_SVs():
     layer_neighbors = get_layer(LAYER_NEIGHBORS)
@@ -91,7 +99,7 @@ def compute_SVs():
                 SV = compute_SV(features_uuid[neighbors[0]])
             else:
                 SV = compute_SVmultiple(features_uuid, neighbors)
-                break
+                show_features(layer_vols, features_uuid, neighbors)
             f[FIELD_SV] = SV
             layer_neighbors.updateFeature(f)
     except:
