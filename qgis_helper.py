@@ -1,11 +1,14 @@
 from qgis.utils import iface
 from PyQt4.QtCore import QVariant
+from PyQt4.QtCore import QPyNullVariant
+
 import logging
 
 FIELD_OBJECTID = 'OBJECTID'
 FIELD_UUID = 'UUID'
 FIELD_VOLUME_HEIGHT = 'UN_VOL_AV'
 FIELD_VOLUME_AREA = 'AREA'
+FIELD_SV = 'SV'
 FIELD_NEIGHBORS_UUID = 'NEIGHBORS'
 
 def load_feature_dict_id(layer):
@@ -21,60 +24,71 @@ def build_spatialindex(features):
     return index
 
 def compute_SV(feature):
-    print("Working on feature " + str(feature.id()) + " UUID " + feature[FIELD_UUID])
+    #print("Working on feature " + str(feature.id()) + " UUID " + feature[FIELD_UUID])
     # Compute S / V.
     geom = feature.geometry()
     base_area = geom.area()
     perimeter = geom.length()
     height = feature[FIELD_VOLUME_HEIGHT]
-    print("Compute S/V: area " + str(base_area) + ", perimeter " + str(perimeter) + " height " + str(height))
+    #print("Compute S/V: area " + str(base_area) + ", perimeter " + str(perimeter) + " height " + str(height))
     S = base_area * 2 + perimeter * height
     V = base_area * height
     SV = S / V
-    print("Compute S/V: " + str(S) + " / " + str(V) + " = " + str(SV))
+    #print("Compute S/V: " + str(S) + " / " + str(V) + " = " + str(SV))
     return S / V
 
-def compute_SVmultiple(feature, neighbors):
+def compute_SVmultiple(features, neighbors):
     # I need to remove from the compute the abjacent points
     # I have multiple scenario like:
     #  - abajenct
     #  - completly on top of feature
     # hum ...
     # I need to compute the part of perimeter that it is in common
-    print("Working on feature " + str(feature.id()) + " UUID " + feature[FIELD_UUID])
-    print("area " + str(feature["AREA"]))
-    # Compute S / V.
-    geom = feature.geometry()
-    base_area = geom.area()
-    perimeter = geom.length()
-    height = feature[FIELD_VOLUME_HEIGHT]
-    print("Compute S/V: area " + str(base_area) + ", perimeter " + str(perimeter) + " height " + str(height))
-    S = base_area * 2 + perimeter * height
-    V = base_area * height
-    SV = S / V
-    print("Compute S/V: " + str(S) + " / " + str(V) + " = " + str(SV))
-    return S / V
 
-
+    total_len = 0
+    total_area = 0
+    total_vol = 0
+    geometries = []
+    for uuid in neighbors:
+        g = features[uuid].geometry()
+        total_area += g.area()
+        height = features[uuid][FIELD_VOLUME_HEIGHT]
+        total_vol = g.area() * height
+        total_len = g.length()
+        geometries.append(g)
+    
+    # Remove from length the common parts.
+    for g in geometries:
+        for neested in geometries:
+            if not g.equals(neested) and not g.disjoint(neested):
+                intersection = g.intersection(neested)
+                print("Geometry 1 len: " + str(g.length()) + " geometry 2 len: " + str(neested.length()) + " intersection len: " + str(intersection.length()))
+    return total_vol
 
 def list_neighbors(index, features, feature):
     geom = feature.geometry()
     intersecting_ids = index.intersects(geom.boundingBox())
     # Initalize neighbors list and sum
-    neighbors = []
+    neighbors = [feature[FIELD_UUID]]
     for intersecting_id in intersecting_ids:
         intersecting_f = features[intersecting_id]
         if (f != intersecting_f and not intersecting_f.geometry().disjoint(geom)):
             neighbors.append(intersecting_f[FIELD_UUID])
     return neighbors
 
+
 def list_neighbors_of_neighbors(feature, features):
     # Add to the current feature
+    if type(feature[FIELD_NEIGHBORS_UUID]) is QPyNullVariant:
+        return []
     neighbors_uuid = feature[FIELD_NEIGHBORS_UUID].split(',')
     for uuid in neighbors_uuid:
-        # get neighbors
-        neighbors_neighbors_uuid = features[uuid][FIELD_NEIGHBORS_UUID]
+        if type(features[uuid][FIELD_NEIGHBORS_UUID]) is QPyNullVariant:
+            break
+        neighbors_neighbors_uuid = features[uuid][FIELD_NEIGHBORS_UUID].split(',')
         for nested_uuid in neighbors_neighbors_uuid:
-            if not nested_uuid in neighbors_uuid:
-                list_neighbors_of_neighbors(features[uuid], features)
-
+            if not nested_uuid in neighbors_uuid and not nested_uuid == feature[FIELD_UUID]: 
+                print("Nested UUID " + nested_uuid + " not in " + ','.join(neighbors_uuid) + " ... adding")
+                neighbors_uuid.append(nested_uuid)
+                #list_neighbors_of_neighbors(features[uuid], features)
+    return neighbors_uuid
