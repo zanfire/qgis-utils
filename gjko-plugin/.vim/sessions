@@ -1,0 +1,244 @@
+let SessionLoad = 1
+if &cp | set nocp | endif
+let s:cpo_save=&cpo
+set cpo&vim
+inoremap <silent> <SNR>27_yrrecord =YRRecord3()
+nnoremap <silent>  :YRReplace '1', p
+nnoremap <silent>  :CtrlP
+nmap <silent> ,cv <Plug>VCSVimDiff
+nmap <silent> ,cu <Plug>VCSUpdate
+nmap <silent> ,cU <Plug>VCSUnlock
+nmap <silent> ,cs <Plug>VCSStatus
+nmap <silent> ,cr <Plug>VCSReview
+nmap <silent> ,cq <Plug>VCSRevert
+nmap <silent> ,cn <Plug>VCSAnnotate
+nmap <silent> ,cN <Plug>VCSSplitAnnotate
+nmap <silent> ,cl <Plug>VCSLog
+nmap <silent> ,cL <Plug>VCSLock
+nmap <silent> ,ci <Plug>VCSInfo
+nmap <silent> ,cg <Plug>VCSGotoOriginal
+nmap <silent> ,cG <Plug>VCSClearAndGotoOriginal
+nmap <silent> ,cd <Plug>VCSDiff
+nmap <silent> ,cD <Plug>VCSDelete
+nmap <silent> ,cc <Plug>VCSCommit
+nmap <silent> ,ca <Plug>VCSAdd
+nnoremap ,a "zyiw:exe "Ack ".@z.""
+nnoremap ,v :YRShow
+nnoremap ,q :qall
+nnoremap ,s :shell
+nnoremap ,o :CtrlP ./
+nnoremap ,b :BufExplorer
+nnoremap ,t :TagbarToggle
+nnoremap ,l :NERDTreeFind
+nnoremap ,f :NERDTreeToggle
+nnoremap ,i :FSHere
+nmap @ :YRMapsMacro
+xnoremap <silent> P :YRPaste 'P', 'v'
+nnoremap <silent> P :YRPaste 'P'
+xnoremap <silent> d :YRDeleteRange 'v'
+nmap gx <Plug>NetrwBrowseX
+nnoremap <silent> gp :YRPaste 'gp'
+nnoremap <silent> gP :YRPaste 'gP'
+xnoremap <silent> p :YRPaste 'p', 'v'
+nnoremap <silent> p :YRPaste 'p'
+xnoremap <silent> x :YRDeleteRange 'v'
+xnoremap <silent> y :YRYankRange 'v'
+nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
+nnoremap <silent> <SNR>27_yrrecord :call YRRecord3()
+nnoremap <silent> <Plug>VCSVimDiff :VCSVimDiff
+nnoremap <silent> <Plug>VCSUpdate :VCSUpdate
+nnoremap <silent> <Plug>VCSUnlock :VCSUnlock
+nnoremap <silent> <Plug>VCSStatus :VCSStatus
+nnoremap <silent> <Plug>VCSSplitAnnotate :VCSAnnotate!
+nnoremap <silent> <Plug>VCSReview :VCSReview
+nnoremap <silent> <Plug>VCSRevert :VCSRevert
+nnoremap <silent> <Plug>VCSLog :VCSLog
+nnoremap <silent> <Plug>VCSLock :VCSLock
+nnoremap <silent> <Plug>VCSInfo :VCSInfo
+nnoremap <silent> <Plug>VCSClearAndGotoOriginal :VCSGotoOriginal!
+nnoremap <silent> <Plug>VCSGotoOriginal :VCSGotoOriginal
+nnoremap <silent> <Plug>VCSDiff :VCSDiff
+nnoremap <silent> <Plug>VCSDelete :VCSDelete
+nnoremap <silent> <Plug>VCSCommit :VCSCommit
+nnoremap <silent> <Plug>VCSAnnotate :VCSAnnotate
+nnoremap <silent> <Plug>VCSAdd :VCSAdd
+nmap <silent> <M-Right> :wincmd l
+nmap <silent> <M-Left> :wincmd h
+nmap <silent> <M-Down> :wincmd j
+nmap <silent> <M-Up> :wincmd k
+map <ScrollWheelDown> 
+map <ScrollWheelUp> 
+let &cpo=s:cpo_save
+unlet s:cpo_save
+set autoindent
+set autoread
+set autowrite
+set background=dark
+set backspace=indent,eol,start
+set expandtab
+set exrc
+set fileencodings=ucs-bom,utf-8,default,latin1
+set helplang=en
+set hidden
+set hlsearch
+set laststatus=2
+set listchars=tab:>-
+set modelines=0
+set mouse=n
+set ruler
+set runtimepath=~/.vim,~/.vim/bundle/ctrlp.vim,~/.vim/bundle/syntastic,~/.vim/bundle/tagbar,/usr/share/vim/vimfiles,/usr/share/vim/vim73,/usr/share/vim/vimfiles/after,~/.vim/after
+set scrolloff=3
+set secure
+set shiftwidth=2
+set shortmess=atI
+set showcmd
+set showtabline=2
+set smartindent
+set smarttab
+set softtabstop=2
+set statusline=%<%f\ %h%m%r%%=%-14.(%l,%c%V%)\ %P
+set noswapfile
+set tabline=%!airline#extensions#tabline#get()
+set tabstop=2
+set visualbell
+set wildignore=*/tmp/*,*.so,*.a,*.o,*.swp,*.lib,*.zip
+set wildmenu
+set wildmode=list:longest
+set window=0
+set nowritebackup
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+let v:this_session=expand("<sfile>:p")
+silent only
+cd ~/Desktop/Giulia/qgis-utils/gjko-plugin
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+set shortmess=aoO
+badd +0 Makefile
+args Makefile
+edit Makefile
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal autoindent
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=sO:#\ -,mO:#\ \ ,b:#
+setlocal commentstring=#\ %s
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+set cursorline
+setlocal cursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'make'
+setlocal filetype=make
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=croql
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=0
+setlocal include=^\\s*include
+setlocal includeexpr=
+setlocal indentexpr=GetMakeIndent()
+setlocal indentkeys=!^F,o,O,<:>,=else,=endif
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+set list
+setlocal list
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal norelativenumber
+setlocal noscrollbind
+setlocal shiftwidth=2
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%!airline#statusline(1)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'make'
+setlocal syntax=make
+endif
+setlocal tabstop=2
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+set nowrap
+setlocal nowrap
+setlocal wrapmargin=0
+silent! normal! zE
+let s:l = 19 - ((18 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+19
+normal! 02l
+tabnext 1
+if exists('s:wipebuf')
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=20 shortmess=atI
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if file_readable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :

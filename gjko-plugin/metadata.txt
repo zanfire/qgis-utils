@@ -1,0 +1,30 @@
+; the next section is mandatory
+
+[general]
+name=GjkoThesis
+email=zanfire@.com
+author=Matteo Valdina, Giulia
+qgisMinimumVersion=2.0
+description=A quite general description.
+about=This paragraph can contain a detailed description
+version=version 0.0
+tracker=http://www.github.com/zanfire/qgis-utils
+repository=http://www.github.com/zanfire/qgis-utils
+; end of mandatory metadata
+
+; start of optional metadata
+category=Raster
+changelog=The changelog lists the plugin versions
+; Tags are in comma separated value format, spaces are allowed within the
+; tag name.
+; Tags should be in English language. Please also check for existing tags and
+; synonyms before creating a new one.
+tags=
+
+; these metadata can be empty, they will eventually become mandatory.
+homepage=
+icon=icon.png
+
+experimental=True
+deprecated=False
+qgisMaximumVersion=
