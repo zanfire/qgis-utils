@@ -1,5 +1,6 @@
 
 # General imports
 
+from ManualCheckAction import ManualCheckAction
 from CreateLayerAction import CreateLayerAction
 from ComputeCompactRatioAction import ComputeCompactRatioAction

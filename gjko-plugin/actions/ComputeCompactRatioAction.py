@@ -16,6 +16,8 @@ class ComputeCompactRatioAction(Action):
         result = dlg.exec_() 
         # See if OK was pressed
         if result == 1:    
+            # Get from interessed layer the selected features. Better if all is stored in one layer instead of on two distigushed layer.
+
             print("Ok!")
         else:
             print("Cancel!")
