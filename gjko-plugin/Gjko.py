@@ -10,7 +10,7 @@ class Gjko:
         # Save reference to the QGIS interface
         self.iface = iface
         self.actions = []
-        #self.actions.append(ComputeCompactRatioAction(iface, "&Thesis"))
+        self.actions.append(ComputeCompactRatioAction(iface, "&Thesis"))
         self.actions.append(CreateLayerAction(iface, "&Thesis"))
         #self.actions.append(ComputeCompactRatioAction(iface, "&Thesis"))
 
