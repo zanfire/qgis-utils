@@ -72,6 +72,7 @@ def show_features(layer, features):
         selection.append(x.id())
     layer.setSelectedFeatures(selection)
     box = layer.boundingBoxOfSelected()
+    box.scale(1.1)
     iface.mapCanvas().setExtent(box)
     iface.mapCanvas().refresh()
 
