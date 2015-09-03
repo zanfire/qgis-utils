@@ -31,15 +31,30 @@
       <item>
        <widget class="QLineEdit" name="currentIndexText">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="maxLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>TextLabel</string>
         </property>
@@ -67,6 +82,9 @@
         <property name="text">
          <string>Previous</string>
         </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -89,6 +107,9 @@
         </property>
         <property name="text">
          <string>Next</string>
+        </property>
+        <property name="default">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

@@ -72,5 +72,5 @@ class ManualCheckDialog(QtGui.QDialog):
         self.features = []
         for f in self.layer.getFeatures():
             self.features.append(f)
-        self.ui.maxLabel.setText("/" + str(len(self.features)))
+        self.ui.maxLabel.setText(" of " + str(len(self.features)))
         self.currentFeatureIdx = -1
