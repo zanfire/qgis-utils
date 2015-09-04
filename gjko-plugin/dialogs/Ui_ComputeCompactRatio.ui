@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>235</height>
+    <height>392</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
      <x>10</x>
      <y>10</y>
      <width>381</width>
-     <height>221</height>
+     <height>371</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -47,12 +47,12 @@
        </size>
       </property>
       <property name="text">
-       <string>Input layer:</string>
+       <string>Cartograpy layer:</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="inputLayer">
+     <widget class="QComboBox" name="landregisterCombo">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -67,12 +67,12 @@
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Target layer:</string>
+       <string>Volumes layer:</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="targetLayer">
+     <widget class="QComboBox" name="volumesCombo">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -82,15 +82,49 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="onlySelected">
+     <widget class="QCheckBox" name="onlySelectedCheckbox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="text">
-       <string>Use only selected features</string>
+       <string>Use only selected features in cartograpy layer</string>
       </property>
       <property name="checked">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Layer name:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="layerName">
+      <property name="text">
+       <string>Energy_values</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Save here:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="saveFolder"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="locationButton">
+      <property name="text">
+       <string>Location</string>
       </property>
      </widget>
     </item>

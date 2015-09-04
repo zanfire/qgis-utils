@@ -8,15 +8,26 @@ class ComputeCompactRatioDialog(QtGui.QDialog):
         QtGui.QDialog.__init__(self) 
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        #QtCore.QObject.connect(self.ui.locationButton, QtCore.SIGNAL('clicked()'), self.openLocation)
+        QtCore.QObject.connect(self.ui.locationButton, QtCore.SIGNAL('clicked()'), self.openLocation)
         layers = iface.legendInterface().layers()
         for l in layers:
-            self.ui.inputLayer.addItem(l.name())
-            self.ui.targetLayer.addItem(l.name())
+            self.ui.landregisterCombo.addItem(l.name())
+            self.ui.volumesCombo.addItem(l.name())
  
-    def inputLayer(self):
-        return str(self.ui.inputLayer.currentText())
+    
+    def openLocation(self):
+        location = QtGui.QFileDialog.getExistingDirectory(None, 'Select a folder:', '', QtGui.QFileDialog.ShowDirsOnly)
+        self.ui.saveFolder.setText(location)
 
-    def targetLayer(self):
-        return str(self.ui.targetLayer.currentText())
+    def working_layer_name(self):
+        return self.ui.layerName.text()
+    
+    def location(self):
+        return self.ui.saveFolder.text()
+   
+    def land_register_layer_name(self):
+        return str(self.ui.landregisterCombo.currentText())
+
+    def volumes_layer_name(self):
+        return str(self.ui.volumesCombo.currentText())
 

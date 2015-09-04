@@ -2,8 +2,9 @@ from qgis.utils import iface
 from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import DEFINES
-import layer_helper
+from ..DEFINES import *
+from ..util import layer_helper
+
 
 def build_neighbors():
     layer_max_ext = layer_helper.get_layer(DEFINES.LAYER_MAX_EXTENSION)
@@ -28,46 +29,65 @@ def build_neighbors():
     layer_neighbors.startEditing()
     layer_neighbors.dataProvider().addFeatures(new_features)
     layer_neighbors.commitChanges()
-    
-def show_neighbors(skip):
-    layer_neighbors = get_layer(LAYER_NEIGHBORS)
-    layer_vols = get_layer(LAYER_VOLUMES)
-    features = load_feature_dict_id(layer_neighbors)
-    features_uuid = load_feature_dict_UUID(layer_vols)
-    
-    idx = 0
-    for f in features.values():
-        # Skip first elements.
-        if idx < skip:
-            idx += 1
-            continue
 
-        neighbors = f[FIELD_NEIGHBORS_UUID].split(',')
-        selection = []
-        for x in neighbors:
-            selection.append(features_uuid[x].id())
-            layer_vols.setSelectedFeatures(selection)
-        box = layer_vols.boundingBoxOfSelected()
-        iface.mapCanvas().setExtent(box)
-        iface.mapCanvas().refresh()
-        reply = QMessageBox.question(None, 'Message', 'Continue?\n (seeing feature ' + str(idx)+ ')', QMessageBox.No, QMessageBox.Yes)
-        if reply == QMessageBox.No:
-            break
-        idx += 1
+"""
+Compute compact ratio only on a simple volume without adiacent volumes. 
+"""
+def compute_simple_compact_ratio(inFeature, outFeature):
+    # Compute S / V.
+    geom = inFeature.geometry()
+    base_area = geom.area()
+    perimeter = geom.length()
+    height = inFeature[FIELD_VOLUME_HEIGHT]
+    S = base_area * 2 + perimeter * height 
+    V = base_area * height
+    SV = S / V
+    outFeature[FIELD_CATID] = inFeature[FIELD_CODCAT]
+    outFeature[FIELD_AREA] = base_area
+    outFeature[FIELD_HEIGHT] = height
+    outFeature[FIELD_PERIMETER] = perimeter
+    outFeature[FIELD_COMPACT_RATIO] = SV
 
-def show_features(layer, features, neighbors):
-    selection = []
-    for x in neighbors:
-        selection.append(features[x].id())
-    layer.setSelectedFeatures(selection)
-    box = layer.boundingBoxOfSelected()
-    iface.mapCanvas().setExtent(box)
-    iface.mapCanvas().refresh()
+def compute_SVmultiple(features, neighbors):
+    # I need to remove from the compute the abjacent points
+    # I have multiple scenario like:
+    #  - abajenct
+    #  - completly on top of feature
+    # hum ...
+    # I need to compute the part of perimeter that it is in common
 
-def compute_SVs():
-    layer_neighbors = get_layer(LAYER_NEIGHBORS)
-    layer_vols = get_layer(LAYER_VOLUMES)
+    total_wall = 0
+    total_area = 0
+    total_vol = 0
+    geometries = []
+    for uuid in neighbors:
+        g = features[uuid].geometry()
+        total_area += g.area()
+        height = features[uuid][FIELD_VOLUME_HEIGHT]
+        total_vol += g.area() * height
+        total_wall += g.length() * height
+        geometries.append(g)
     
+    # Remove from length the common parts.
+    for i in range(0, len(geometries)):
+        g = geometries[i]
+        for x in range(i, len(geometries)):
+            neested = geometries[x]
+            if not g.equals(neested) and not g.disjoint(neested):
+                intersection = g.intersection(neested)
+                h1 = features[neighbors[i]][FIELD_VOLUME_HEIGHT]
+                h2 = features[neighbors[x]][FIELD_VOLUME_HEIGHT]
+                if h1 < h2:
+                    total_wall -= intersection.length() * h1
+                else:
+                    total_wall -= intersection.length() * h2
+                print("Geometry 1 len: " + str(g.length()) + " geometry 2 len: " + str(neested.length()) + " intersection len: " + str(intersection.length()))
+    return (total_area * 2 + total_wall) / total_vol
+
+
+
+def compute_SVs(layer_neighbors, layer_vols):
+   
     features = load_feature_dict_id(layer_neighbors)
     features_uuid = load_feature_dict_UUID(layer_vols)
     layer_neighbors.startEditing()

@@ -23,56 +23,6 @@ def build_spatialindex(features):
         index.insertFeature(f)
     return index
 
-def compute_SV(feature):
-    #print("Working on feature " + str(feature.id()) + " UUID " + feature[FIELD_UUID])
-    # Compute S / V.
-    geom = feature.geometry()
-    base_area = geom.area()
-    perimeter = geom.length()
-    height = feature[FIELD_VOLUME_HEIGHT]
-    #print("Compute S/V: area " + str(base_area) + ", perimeter " + str(perimeter) + " height " + str(height))
-    S = base_area * 2 + perimeter * height 
-    V = base_area * height
-    SV = S / V
-    #print("Compute S/V: " + str(S) + " / " + str(V) + " = " + str(SV))
-    return S / V
-
-def compute_SVmultiple(features, neighbors):
-    # I need to remove from the compute the abjacent points
-    # I have multiple scenario like:
-    #  - abajenct
-    #  - completly on top of feature
-    # hum ...
-    # I need to compute the part of perimeter that it is in common
-
-    total_wall = 0
-    total_area = 0
-    total_vol = 0
-    geometries = []
-    for uuid in neighbors:
-        g = features[uuid].geometry()
-        total_area += g.area()
-        height = features[uuid][FIELD_VOLUME_HEIGHT]
-        total_vol += g.area() * height
-        total_wall += g.length() * height
-        geometries.append(g)
-    
-    # Remove from length the common parts.
-    for i in range(0, len(geometries)):
-        g = geometries[i]
-        for x in range(i, len(geometries)):
-            neested = geometries[x]
-            if not g.equals(neested) and not g.disjoint(neested):
-                intersection = g.intersection(neested)
-                h1 = features[neighbors[i]][FIELD_VOLUME_HEIGHT]
-                h2 = features[neighbors[x]][FIELD_VOLUME_HEIGHT]
-                if h1 < h2:
-                    total_wall -= intersection.length() * h1
-                else:
-                    total_wall -= intersection.length() * h2
-                print("Geometry 1 len: " + str(g.length()) + " geometry 2 len: " + str(neested.length()) + " intersection len: " + str(intersection.length()))
-    return (total_area * 2 + total_wall) / total_vol
-
 def list_neighbors(index, features, feature):
     geom = feature.geometry()
     intersecting_ids = index.intersects(geom.boundingBox())
