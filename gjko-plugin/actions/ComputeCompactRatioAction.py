@@ -69,3 +69,29 @@ class ComputeCompactRatioAction(Action):
         layer.startEditing()
         layer.dataProvider().addFeatures(new_features)
         layer.commitChanges()
+
+        self.compute_simplify(layer, features_lr)
+
+    def compute_simplify(self, l, features_lr):
+        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS)
+        new_features = []
+        for id_lr in features_lr.keys():
+            feature = QgsFeature(layer.pendingFields())
+            geom = None
+            for f in features_lr[id_lr]:
+                if geom == None:
+                    geom = f.geometry()
+                    feature[FIELD_CATID] = f[FIELD_CATID]
+                    feature[FIELD_DISPERSING_SURFACE] = f[FIELD_DISPERSING_SURFACE]
+                    feature[FIELD_MULTIPLE_COMPACT_RATIO] = f[FIELD_MULTIPLE_COMPACT_RATIO]
+                else:
+                    feature[FIELD_DISPERSING_SURFACE] += f[FIELD_DISPERSING_SURFACE]
+                    geom = geom.combine(f.geometry() ) 
+            feature.setGeometry(geom)
+            feature[FIELD_AREA] = geom.area()
+            feature[FIELD_PERIMETER] = geom.length()
+            new_features.append(feature)
+        layer.startEditing()
+        layer.dataProvider().addFeatures(new_features)
+        layer.commitChanges()
+
