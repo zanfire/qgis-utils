@@ -41,14 +41,30 @@ class ComputeCompactRatioAction(Action):
 
     def compute(self, layer, land_register, volumes):
         QgsMessageLog.logMessage("Starting compation ...", "Gjko", QgsMessageLog.INFO)
+        
         features = volumes.getFeatures()
-
+        features_id = layer_helper.load_features(volumes)
+        index = layer_helper.build_spatialindex(features_id.values())
         new_features = []
+        features_lr = {}
+
         for f in features:
+            QgsMessageLog.logMessage("Working on " + str(f.id())+" feature.", "Gjko", QgsMessageLog.INFO)
             feature = QgsFeature(layer.pendingFields())
             feature.setGeometry(f.geometry())
+            # Compute comapct ratio 
             mem.compute_simple_compact_ratio(f, feature)
+            # Compute dispersing surface.
+            mem.dispersing_surface(index, feature, features_id)
             new_features.append(feature)
+            id_lr = f[FIELD_CODCAT]
+            if not id_lr in features_lr.keys():
+                features_lr[id_lr] = [ feature ]
+            else:
+                features_lr[id_lr].append(feature)
+        for id_lr in features_lr.keys():
+            mem.compute_multiple_compact_ratio(features_lr[id_lr])
+
         QgsMessageLog.logMessage("Adding " + str(len(new_features))+" new features.", "Gjko", QgsMessageLog.INFO)
         layer.startEditing()
         layer.dataProvider().addFeatures(new_features)

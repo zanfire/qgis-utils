@@ -1,5 +1,5 @@
 from qgis.utils import iface
-from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsVectorFileWriter
+from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsVectorFileWriter, QgsSpatialIndex
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -29,12 +29,9 @@ def get_layer(name):
 def load_features(layer):
     return {f.id(): f for f in layer.getFeatures()}
 
-def load_features_UUID(layer):
-    return {f[FIELD_UUID]: f for f in layer.getFeatures()}
-
 def build_spatialindex(features):
     index = QgsSpatialIndex()
-    for f in features.values():
+    for f in features:
         index.insertFeature(f)
     return index
 

@@ -30,6 +30,24 @@ def build_neighbors():
     layer_neighbors.dataProvider().addFeatures(new_features)
     layer_neighbors.commitChanges()
 
+
+def dispersing_surface(index, feature, features):   
+    ids = index.intersects(feature.geometry().boundingBox())
+    fg = feature.geometry()
+    touch = 0
+    for i in ids:
+        f = features[i]
+        g = f.geometry()
+        if (f != feature and not feature.geometry().disjoint(f.geometry())):
+            inter = g.intersection(fg)
+            h = f[FIELD_VOLUME_HEIGHT]
+            h2 = feature[FIELD_HEIGHT]
+            if h2 <= h:
+                h = h2
+            touch += (inter.length() / 2) * h
+            #feature.setGeometry(inter)
+    feature[FIELD_DISPERSING_SURFACE] = feature[FIELD_AREA] * 2 + (feature[FIELD_PERIMETER] * feature[FIELD_HEIGHT]) - touch
+
 """
 Compute compact ratio only on a simple volume without adiacent volumes. 
 """
@@ -48,61 +66,13 @@ def compute_simple_compact_ratio(inFeature, outFeature):
     outFeature[FIELD_PERIMETER] = perimeter
     outFeature[FIELD_COMPACT_RATIO] = SV
 
-def compute_SVmultiple(features, neighbors):
-    # I need to remove from the compute the abjacent points
-    # I have multiple scenario like:
-    #  - abajenct
-    #  - completly on top of feature
-    # hum ...
-    # I need to compute the part of perimeter that it is in common
-
-    total_wall = 0
-    total_area = 0
+def compute_multiple_compact_ratio(features):
     total_vol = 0
-    geometries = []
-    for uuid in neighbors:
-        g = features[uuid].geometry()
-        total_area += g.area()
-        height = features[uuid][FIELD_VOLUME_HEIGHT]
-        total_vol += g.area() * height
-        total_wall += g.length() * height
-        geometries.append(g)
-    
-    # Remove from length the common parts.
-    for i in range(0, len(geometries)):
-        g = geometries[i]
-        for x in range(i, len(geometries)):
-            neested = geometries[x]
-            if not g.equals(neested) and not g.disjoint(neested):
-                intersection = g.intersection(neested)
-                h1 = features[neighbors[i]][FIELD_VOLUME_HEIGHT]
-                h2 = features[neighbors[x]][FIELD_VOLUME_HEIGHT]
-                if h1 < h2:
-                    total_wall -= intersection.length() * h1
-                else:
-                    total_wall -= intersection.length() * h2
-                print("Geometry 1 len: " + str(g.length()) + " geometry 2 len: " + str(neested.length()) + " intersection len: " + str(intersection.length()))
-    return (total_area * 2 + total_wall) / total_vol
+    total_disp = 0
+    for f in features:
+        total_vol += f[FIELD_HEIGHT] * f[FIELD_AREA]
+        total_disp += f[FIELD_DISPERSING_SURFACE]
+    mcr = total_disp / total_vol
+    for f in features:
+        f[FIELD_MULTIPLE_COMPACT_RATIO] = mcr
 
-
-
-def compute_SVs(layer_neighbors, layer_vols):
-   
-    features = load_feature_dict_id(layer_neighbors)
-    features_uuid = load_feature_dict_UUID(layer_vols)
-    layer_neighbors.startEditing()
-    try:
-        for f in features.values():
-            neighbors = f[FIELD_NEIGHBORS_UUID].split(',')
-            SV = 0.0
-            if len(neighbors) == 1:
-                SV = compute_SV(features_uuid[neighbors[0]])
-            else:
-                SV = compute_SVmultiple(features_uuid, neighbors)
-                show_features(layer_vols, features_uuid, neighbors)
-            f[FIELD_SV] = SV
-            layer_neighbors.updateFeature(f)
-    except:
-        layer_neighbors.rollBack()
-        raise
-    layer_neighbors.commitChanges()

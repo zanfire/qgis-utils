@@ -21,12 +21,15 @@ FIELD_CATID = 'ID_LR'
 FIELD_AREA = 'AREA'
 FIELD_PERIMETER = 'PERIMETER'
 FIELD_HEIGHT = 'HEIGHT'
-FIELD_COMPACT_RATIO = 'COMP_RATIO'
+FIELD_DISPERSING_SURFACE        = 'DISP_SURF'
+FIELD_COMPACT_RATIO             = 'COMP_RATIO'
+FIELD_MULTIPLE_COMPACT_RATIO    = 'MCOMP_RATIO'
 
 LAYER_MEM_FIELDS = [ 
         QgsField(FIELD_CATID, QVariant.String),
-#        QgsField(FIELD_NEIGHBORS_UUID,  QVariant.String), 
         QgsField(FIELD_AREA,  QVariant.Double),
         QgsField(FIELD_PERIMETER,  QVariant.Double),
         QgsField(FIELD_HEIGHT,  QVariant.Double),
-        QgsField(FIELD_COMPACT_RATIO,  QVariant.Double)]
+        QgsField(FIELD_DISPERSING_SURFACE,  QVariant.Double),
+        QgsField(FIELD_COMPACT_RATIO,  QVariant.Double),
+        QgsField(FIELD_MULTIPLE_COMPACT_RATIO, QVariant.Double)]
