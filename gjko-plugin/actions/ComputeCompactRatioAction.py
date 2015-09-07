@@ -18,17 +18,14 @@ class ComputeCompactRatioAction(Action):
         dlg.show()
         result = dlg.exec_() 
         if result == 1:
-            layer = self.initialize(dlg.working_layer_name())
-            # Get from interessed layer the selected features. Better if all is stored in one layer instead of on two distigushed layer.
-            land_register_layer = layer_helper.get_layer(dlg.land_register_layer_name())
             volumes_layer = layer_helper.get_layer(dlg.volumes_layer_name())
-            
-            self.compute(layer, land_register_layer, volumes_layer)
+            layer = self.initialize(dlg.working_layer_name(), volumes_layer)
+            self.compute(layer, volumes_layer)
         else:
             print("Cancel!")
         print("Completed.")
 
-    def initialize(self, name):
+    def initialize(self, name, baselayer):
         layer = layer_helper.get_layer(name)
         if layer != None:
             # Error or not?
@@ -36,10 +33,10 @@ class ComputeCompactRatioAction(Action):
             return layer
         # Check if exists layer name
         # Create layer.
-        layer = layer_helper.create_layer(name, LAYER_MEM_FIELDS)
+        layer = layer_helper.create_layer(name, LAYER_MEM_FIELDS, baselayer)
         return layer
 
-    def compute(self, layer, land_register, volumes):
+    def compute(self, layer, volumes):
         QgsMessageLog.logMessage("Starting compation ...", "Gjko", QgsMessageLog.INFO)
         
         features = volumes.getFeatures()
@@ -51,7 +48,7 @@ class ComputeCompactRatioAction(Action):
         for f in features:
             QgsMessageLog.logMessage("Working on " + str(f.id())+" feature.", "Gjko", QgsMessageLog.INFO)
             feature = QgsFeature(layer.pendingFields())
-            feature.setGeometry(f.geometry())
+            feature.setGeometry(layer_helper.copy_geometry(f))
             # Compute comapct ratio 
             mem.compute_simple_compact_ratio(f, feature)
             # Compute dispersing surface.
@@ -73,7 +70,7 @@ class ComputeCompactRatioAction(Action):
         self.compute_simplify(layer, features_lr)
 
     def compute_simplify(self, l, features_lr):
-        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS)
+        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS, l)
         new_features = []
         for id_lr in features_lr.keys():
             feature = QgsFeature(layer.pendingFields())
@@ -81,12 +78,14 @@ class ComputeCompactRatioAction(Action):
             for f in features_lr[id_lr]:
                 if geom == None:
                     geom = f.geometry()
+                    #geom = layer_helper.copy_geometry(f)
                     feature[FIELD_CATID] = f[FIELD_CATID]
                     feature[FIELD_DISPERSING_SURFACE] = f[FIELD_DISPERSING_SURFACE]
                     feature[FIELD_MULTIPLE_COMPACT_RATIO] = f[FIELD_MULTIPLE_COMPACT_RATIO]
                 else:
                     feature[FIELD_DISPERSING_SURFACE] += f[FIELD_DISPERSING_SURFACE]
-                    geom = geom.combine(f.geometry() ) 
+                    geom = geom.combine(f.geometry()) 
+                    #geom = geom.combine(layer_helper.copy_geometry(f)) 
             feature.setGeometry(geom)
             feature[FIELD_AREA] = geom.area()
             feature[FIELD_PERIMETER] = geom.length()
@@ -94,4 +93,5 @@ class ComputeCompactRatioAction(Action):
         layer.startEditing()
         layer.dataProvider().addFeatures(new_features)
         layer.commitChanges()
+
 

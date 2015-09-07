@@ -1,12 +1,16 @@
 from qgis.utils import iface
-from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsVectorFileWriter, QgsSpatialIndex
+from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsVectorFileWriter, QgsSpatialIndex, QgsGeometry
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import os
 
-def create_layer(name, attributes):
-    layer = QgsVectorLayer("Polygon", name, "memory")
+def create_layer(name, attributes, baselayer = None):
+    layerattr = ''
+    if baselayer != None:
+        layerattr = '?crs=' + baselayer.crs().authid()
+        layerattr += '&index=yes'
+    layer = QgsVectorLayer("Polygon" + layerattr, name, "memory")
     pr = layer.dataProvider()
     layer.startEditing()
     pr.addAttributes(attributes)
@@ -35,6 +39,10 @@ def build_spatialindex(features):
         index.insertFeature(f)
     return index
 
+def copy_geometry(feature):
+    polygon = feature.geometry().asQPolygonF()
+    return QgsGeometry.fromQPolygonF(polygon)
+ 
 # Move in UI helper
 
 def show_neighbors(skip):
