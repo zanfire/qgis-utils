@@ -14,12 +14,12 @@ class ComputeCompactRatioAction(Action):
         super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute compact ratio")
 
     def run(self): 
-        dlg = ComputeCompactRatioDialog() 
-        dlg.show()
-        result = dlg.exec_() 
+        self.dlg = ComputeCompactRatioDialog() 
+        self.dlg.show()
+        result = self.dlg.exec_() 
         if result == 1:
-            volumes_layer = layer_helper.get_layer(dlg.volumes_layer_name())
-            layer = self.initialize(dlg.working_layer_name(), volumes_layer)
+            volumes_layer = layer_helper.get_layer(self.dlg.volumes_layer_name())
+            layer = self.initialize(self.dlg.working_layer_name(), volumes_layer)
             self.compute(layer, volumes_layer)
         else:
             print("Cancel!")
@@ -67,7 +67,8 @@ class ComputeCompactRatioAction(Action):
         layer.dataProvider().addFeatures(new_features)
         layer.commitChanges()
 
-        self.compute_simplify(layer, features_lr)
+        if self.dlg.simplifyLayerCheck():
+            self.compute_simplify(layer, features_lr)
 
     def compute_simplify(self, l, features_lr):
         layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS, l)

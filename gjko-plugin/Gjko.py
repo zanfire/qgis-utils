@@ -12,7 +12,7 @@ class Gjko:
         self.iface = iface
         self.actions = []
         self.actions.append(ComputeCompactRatioAction(iface, menuName))
-        self.actions.append(CreateLayerAction(iface, menuName))
+        #self.actions.append(CreateLayerAction(iface, menuName))
         self.actions.append(ManualCheckAction(iface, menuName))
         #self.actions.append(ComputeCompactRatioAction(iface, "&Thesis"))
 

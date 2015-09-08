@@ -11,7 +11,6 @@ class ComputeCompactRatioDialog(QtGui.QDialog):
         QtCore.QObject.connect(self.ui.locationButton, QtCore.SIGNAL('clicked()'), self.openLocation)
         layers = iface.legendInterface().layers()
         for l in layers:
-            self.ui.landregisterCombo.addItem(l.name())
             self.ui.volumesCombo.addItem(l.name())
  
     
@@ -25,8 +24,8 @@ class ComputeCompactRatioDialog(QtGui.QDialog):
     def location(self):
         return self.ui.saveFolder.text()
    
-    def land_register_layer_name(self):
-        return str(self.ui.landregisterCombo.currentText())
+    def simplifyLayerCheck(self):
+        return self.ui.simplifyLayerCheckBox.isChecked()
 
     def volumes_layer_name(self):
         return str(self.ui.volumesCombo.currentText())

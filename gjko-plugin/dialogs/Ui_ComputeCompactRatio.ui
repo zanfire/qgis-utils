@@ -33,38 +33,6 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>69</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Cartograpy layer:</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="landregisterCombo">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string>Volumes layer:</string>
@@ -98,6 +66,16 @@
      </widget>
     </item>
     <item>
+     <widget class="QCheckBox" name="simplifyLayerCheckBox">
+      <property name="text">
+       <string>Create simplified layer</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>Layer name:</string>
@@ -119,10 +97,17 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="saveFolder"/>
+     <widget class="QLineEdit" name="saveFolder">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QPushButton" name="locationButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Location</string>
       </property>
