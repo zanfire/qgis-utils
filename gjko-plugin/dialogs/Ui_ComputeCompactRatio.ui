@@ -76,6 +76,16 @@
      </widget>
     </item>
     <item>
+     <widget class="QCheckBox" name="intersectionLayerCheckBox">
+      <property name="text">
+       <string>Create interesection layer</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>Layer name:</string>

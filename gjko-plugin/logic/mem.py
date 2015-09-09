@@ -1,5 +1,5 @@
 from qgis.utils import iface
-from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry
+from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsGeometry
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ..DEFINES import *
@@ -30,22 +30,33 @@ def build_neighbors():
     layer_neighbors.dataProvider().addFeatures(new_features)
     layer_neighbors.commitChanges()
 
-
-def dispersing_surface(index, feature, features):   
-    ids = index.intersects(feature.geometry().boundingBox())
+def get_intersection(g1, g2):
+    result = []
+    r1 = QgsGeometry.fromPolyline(g1.asPolygon()[0])
+    r2 = QgsGeometry.fromPolyline(g2.asPolygon()[0])
+    if not r1.equals(r2) and r1.intersects(r2):
+        i = r1.intersection(r2)
+        result.append(QgsGeometry(i))
+    return result
+  
+def dispersing_surface(index, feature, features):
     fg = feature.geometry()
+    ids = index.intersects(fg.boundingBox())
     touch = 0
+    perimeter_adjacent = 0
     for i in ids:
         f = features[i]
         g = f.geometry()
         if (f != feature and not feature.geometry().disjoint(f.geometry())):
-            inter = g.intersection(fg)
+            intersection_set = get_intersection(g, fg)
             h = f[FIELD_VOLUME_HEIGHT]
             h2 = feature[FIELD_HEIGHT]
             if h2 <= h:
                 h = h2
-            touch += (inter.length() / 2) * h
-            #feature.setGeometry(inter)
+            for intersection in intersection_set:
+                perimeter_adjacent += intersection.length()
+                touch += intersection.length() * h
+    feature[FIELD_PERIMETER_ADJACENT] = perimeter_adjacent
     feature[FIELD_DISPERSING_SURFACE] = feature[FIELD_AREA] * 2 + (feature[FIELD_PERIMETER] * feature[FIELD_HEIGHT]) - touch
 
 """

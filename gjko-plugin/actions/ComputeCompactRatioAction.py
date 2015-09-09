@@ -59,6 +59,7 @@ class ComputeCompactRatioAction(Action):
                 features_lr[id_lr] = [ feature ]
             else:
                 features_lr[id_lr].append(feature)
+
         for id_lr in features_lr.keys():
             mem.compute_multiple_compact_ratio(features_lr[id_lr])
 
@@ -69,6 +70,8 @@ class ComputeCompactRatioAction(Action):
 
         if self.dlg.simplifyLayerCheck():
             self.compute_simplify(layer, features_lr)
+        if self.dlg.create_intersection_layer_check():
+            self.create_intersection_layer(layer, index, features_id)
 
     def compute_simplify(self, l, features_lr):
         layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS, l)
@@ -95,4 +98,20 @@ class ComputeCompactRatioAction(Action):
         layer.dataProvider().addFeatures(new_features)
         layer.commitChanges()
 
-
+    def create_intersection_layer(self, l, index, features):
+        layer = layer_helper.create_layer(l.name() + "_intersection", [], l, 'LineString')
+        new_features = []
+        for f in features.values():
+            g1 = f.geometry()
+            ids = index.intersects(g1.boundingBox())
+            for i in ids:
+                g2 = features[i].geometry()
+                if not g1.equals(g2):
+                    intersection_set = mem.get_intersection(g1, g2)
+                    for intersection in intersection_set:
+                        feature = QgsFeature()
+                        feature.setGeometry(intersection)
+                        new_features.append(feature)
+        layer.startEditing()
+        layer.dataProvider().addFeatures(new_features)
+        layer.commitChanges()

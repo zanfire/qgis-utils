@@ -3,6 +3,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from actions import *
+from resources import *
 
 class Gjko: 
 

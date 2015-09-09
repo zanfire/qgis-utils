@@ -5,12 +5,12 @@ from PyQt4.QtGui import *
 
 import os
 
-def create_layer(name, attributes, baselayer = None):
+def create_layer(name, attributes, baselayer = None, layertype = 'Polygon'):
     layerattr = ''
     if baselayer != None:
         layerattr = '?crs=' + baselayer.crs().authid()
         layerattr += '&index=yes'
-    layer = QgsVectorLayer("Polygon" + layerattr, name, "memory")
+    layer = QgsVectorLayer(layertype + layerattr, name, "memory") # memory
     pr = layer.dataProvider()
     layer.startEditing()
     pr.addAttributes(attributes)

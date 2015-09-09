@@ -30,3 +30,6 @@ class ComputeCompactRatioDialog(QtGui.QDialog):
     def volumes_layer_name(self):
         return str(self.ui.volumesCombo.currentText())
 
+    def create_intersection_layer_check(self):
+         return self.ui.intersectionLayerCheckBox.isChecked()
+
