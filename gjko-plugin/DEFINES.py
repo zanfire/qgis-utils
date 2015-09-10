@@ -35,3 +35,7 @@ LAYER_MEM_FIELDS = [
         QgsField(FIELD_DISPERSING_SURFACE,  QVariant.Double),
         QgsField(FIELD_COMPACT_RATIO,  QVariant.Double),
         QgsField(FIELD_MULTIPLE_COMPACT_RATIO, QVariant.Double)]
+
+LAYER_MEM2_FIELDS = [ 
+        QgsField(FIELD_CATID, QVariant.String),
+        QgsField(FIELD_COMPACT_RATIO,  QVariant.Double)]

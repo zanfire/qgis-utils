@@ -48,7 +48,7 @@ class ComputeCompactRatioAction(Action):
         for f in features:
             QgsMessageLog.logMessage("Working on " + str(f.id())+" feature.", "Gjko", QgsMessageLog.INFO)
             feature = QgsFeature(layer.pendingFields())
-            feature.setGeometry(layer_helper.copy_geometry(f))
+            feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
             # Compute comapct ratio 
             mem.compute_simple_compact_ratio(f, feature)
             # Compute dispersing surface.
@@ -60,8 +60,8 @@ class ComputeCompactRatioAction(Action):
             else:
                 features_lr[id_lr].append(feature)
 
-        for id_lr in features_lr.keys():
-            mem.compute_multiple_compact_ratio(features_lr[id_lr])
+        #for id_lr in features_lr.keys():
+        #    mem.compute_multiple_compact_ratio(features_lr[id_lr])
 
         QgsMessageLog.logMessage("Adding " + str(len(new_features))+" new features.", "Gjko", QgsMessageLog.INFO)
         layer.startEditing()
@@ -74,26 +74,31 @@ class ComputeCompactRatioAction(Action):
             self.create_intersection_layer(layer, index, features_id)
 
     def compute_simplify(self, l, features_lr):
+        features_id = layer_helper.load_features(l)
+        index = layer_helper.build_spatialindex(features_id.values())
+ 
         layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS, l)
         new_features = []
         for id_lr in features_lr.keys():
-            feature = QgsFeature(layer.pendingFields())
-            geom = None
-            for f in features_lr[id_lr]:
-                if geom == None:
-                    geom = f.geometry()
-                    #geom = layer_helper.copy_geometry(f)
-                    feature[FIELD_CATID] = f[FIELD_CATID]
-                    feature[FIELD_DISPERSING_SURFACE] = f[FIELD_DISPERSING_SURFACE]
-                    feature[FIELD_MULTIPLE_COMPACT_RATIO] = f[FIELD_MULTIPLE_COMPACT_RATIO]
-                else:
-                    feature[FIELD_DISPERSING_SURFACE] += f[FIELD_DISPERSING_SURFACE]
-                    geom = geom.combine(f.geometry()) 
-                    #geom = geom.combine(layer_helper.copy_geometry(f)) 
-            feature.setGeometry(geom)
-            feature[FIELD_AREA] = geom.area()
-            feature[FIELD_PERIMETER] = geom.length()
-            new_features.append(feature)
+            feature = [ ]
+            idx = 0
+            features = features_lr[id_lr]
+            for f in features:
+                insert = True
+                g = f.geometry()
+                geom = mem.merge(g, features)
+                for fe in feature:
+                    if geom.equals(fe.geometry()) or geom.contains(fe.geometry()):
+                        insert = False
+                        break
+                if insert:
+                    feature.append(QgsFeature(layer.pendingFields()))
+                    feature[idx].setGeometry(geom)
+                    feature[idx][FIELD_CATID] = f[FIELD_CATID] + '_' + str(idx)
+                    feature[idx][FIELD_COMPACT_RATIO] = f[FIELD_MULTIPLE_COMPACT_RATIO]
+                    idx += 1
+            new_features.extend(feature)
+        mem.compute_multiple_compact_ratio2(index, new_features, features_id)
         layer.startEditing()
         layer.dataProvider().addFeatures(new_features)
         layer.commitChanges()

@@ -59,7 +59,7 @@ class Ui_Dialog(object):
         self.simplifyLayerCheckBox.setObjectName(_fromUtf8("simplifyLayerCheckBox"))
         self.verticalLayout.addWidget(self.simplifyLayerCheckBox)
         self.intersectionLayerCheckBox = QtGui.QCheckBox(self.verticalLayoutWidget)
-        self.intersectionLayerCheckBox.setChecked(True)
+        self.intersectionLayerCheckBox.setChecked(False)
         self.intersectionLayerCheckBox.setObjectName(_fromUtf8("intersectionLayerCheckBox"))
         self.verticalLayout.addWidget(self.intersectionLayerCheckBox)
         self.label_3 = QtGui.QLabel(self.verticalLayoutWidget)

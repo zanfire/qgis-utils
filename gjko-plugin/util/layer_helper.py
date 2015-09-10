@@ -29,7 +29,6 @@ def get_layer(name):
             return layer
     return None
 
-
 def load_features(layer):
     return {f.id(): f for f in layer.getFeatures()}
 
@@ -40,8 +39,9 @@ def build_spatialindex(features):
     return index
 
 def copy_geometry(feature):
-    polygon = feature.geometry().asQPolygonF()
-    return QgsGeometry.fromQPolygonF(polygon)
+    return QgsGeometry(feature.geometry())
+    #polygon = feature.geometry().asQPolygonF()
+    #return QgsGeometry.fromQPolygonF(polygon)
  
 # Move in UI helper
 

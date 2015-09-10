@@ -30,6 +30,24 @@ def build_neighbors():
     layer_neighbors.dataProvider().addFeatures(new_features)
     layer_neighbors.commitChanges()
 
+
+def merge(geom, features):
+    while True:
+        breakloop = True
+        for f in features:
+            g = f.geometry()
+            if geom.equals(g): 
+                continue
+            if geom.contains(g):
+                continue
+            if not geom.disjoint(g) or geom.touches(g):
+                geom = QgsGeometry(geom.combine(g))
+                breakloop = False
+                break
+        if breakloop:
+            break
+    return geom
+
 def get_intersection(g1, g2):
     result = []
     r1 = QgsGeometry.fromPolyline(g1.asPolygon()[0])
@@ -86,4 +104,17 @@ def compute_multiple_compact_ratio(features):
     mcr = total_disp / total_vol
     for f in features:
         f[FIELD_MULTIPLE_COMPACT_RATIO] = mcr
+
+def compute_multiple_compact_ratio2(index, sfeatures, features):
+    for feature in sfeatures:
+        total_vol = 0
+        total_disp = 0
+        ids = index.intersects(feature.geometry().boundingBox())
+        for i in ids:
+            f = features[i]
+            if not feature.geometry().disjoint(f.geometry()):
+                total_vol += f[FIELD_HEIGHT] * f[FIELD_AREA]
+                total_disp += f[FIELD_DISPERSING_SURFACE]
+        mcr = total_disp / total_vol
+        feature[FIELD_COMPACT_RATIO] = mcr
 
