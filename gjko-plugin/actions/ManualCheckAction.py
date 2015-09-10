@@ -10,7 +10,7 @@ from ..DEFINES import *
 
 class ManualCheckAction(Action):
     def __init__(self, iface, menu_name):
-        super(ManualCheckAction, self).__init__(iface, menu_name, "Manualy check selected features...")
+        super(ManualCheckAction, self).__init__(iface, menu_name, "Navigate through features...")
 
     def run(self):
         dlg = ManualCheckDialog() 

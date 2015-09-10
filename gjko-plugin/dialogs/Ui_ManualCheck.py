@@ -25,9 +25,9 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(453, 193)
+        Dialog.resize(231, 140)
         self.verticalLayoutWidget = QtGui.QWidget(Dialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 431, 171))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 211, 121))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -84,7 +84,7 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
         self.maxLabel.setText(_translate("Dialog", "TextLabel", None))
-        self.previousButton.setText(_translate("Dialog", "Previous", None))
+        self.previousButton.setText(_translate("Dialog", "<<", None))
         self.currentButton.setText(_translate("Dialog", "Current", None))
-        self.nextButton.setText(_translate("Dialog", "Next", None))
+        self.nextButton.setText(_translate("Dialog", ">>", None))
 

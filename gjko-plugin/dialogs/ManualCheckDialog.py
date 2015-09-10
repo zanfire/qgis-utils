@@ -19,17 +19,16 @@ class ManualCheckDialog(QtGui.QDialog):
         layers = iface.legendInterface().layers()
         for l in layers:
             self.ui.layersCombo.addItem(l.name())
-
-       
+ 
         self.layerName = None
 
     def onNext(self):
         if self.layerName == None:
             self.initLayerNavigation()
-        if self.currentFeatureIdx >= len(self.features):
+        if self.currentFeatureIdx >= (len(self.features) - 1):
             return
         self.currentFeatureIdx += 1
-        self.ui.currentIndexText.setText(str(self.currentFeatureIdx))
+        self.ui.currentIndexText.setText(str(self.currentFeatureIdx + 1))
         layer_helper.show_features(self.layer, [ self.features[self.currentFeatureIdx]])
 
     def onCurrent(self):
@@ -38,15 +37,16 @@ class ManualCheckDialog(QtGui.QDialog):
         if self.currentFeatureIdx < 0:
             return
         layer_helper.show_features(self.layer, [ self.features[self.currentFeatureIdx]])
-
+        self.ui.currentIndexText.setText(str(self.currentFeatureIdx + 1))     
+ 
     def onPrev(self):
         if self.layerName == None:
             return
-        if self.currentFeatureIdx < 0:
+        if self.currentFeatureIdx <= 0:
             return
         self.currentFeatureIdx -= 1
         layer_helper.show_features(self.layer, [ self.features[self.currentFeatureIdx]])
-        self.ui.currentIndexText.setText(str(self.currentFeatureIdx))     
+        self.ui.currentIndexText.setText(str(self.currentFeatureIdx + 1))     
     
     def onLayerChanged(self, name):
         self.initLayerNavigation()
@@ -57,20 +57,19 @@ class ManualCheckDialog(QtGui.QDialog):
             return
         if not str(value).isdigit():
             return
-        intvalue = int(value)
-        if intvalue >= len(self.features):
+        intvalue = int(value) - 1
+        if intvalue >= (len(self.features) - 1):
             return
  
-        self.currentFeatureIdx = int(value)
+        self.currentFeatureIdx = intvalue
         self.onCurrent()
 
     def initLayerNavigation(self):
         self.layerName = str(self.ui.layersCombo.currentText())
         self.layer = layer_helper.get_layer(self.layerName)
-        idx = 0
-        self.lenght = 0
+        iface.setActiveLayer(self.layer)
         self.features = []
         for f in self.layer.getFeatures():
             self.features.append(f)
         self.ui.maxLabel.setText(" of " + str(len(self.features)))
-        self.currentFeatureIdx = -1
+        self.currentFeatureIdx = 0

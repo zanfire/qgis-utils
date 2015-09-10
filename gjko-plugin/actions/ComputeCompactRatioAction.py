@@ -11,7 +11,7 @@ from ..logic import mem
 
 class ComputeCompactRatioAction(Action):
     def __init__(self, iface, menu_name):
-        super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute compact ratio")
+        super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute energy efficency values...")
 
     def run(self): 
         self.dlg = ComputeCompactRatioDialog() 
