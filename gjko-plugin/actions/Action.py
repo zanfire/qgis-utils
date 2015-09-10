@@ -12,12 +12,12 @@ class Action(object):
         QObject.connect(self.action, SIGNAL("activated()"), self.run) 
 
     def load(self):  
-        self.iface.addToolBarIcon(self.action)
+        #self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(self.menu, self.action)
 
     def unload(self):
         self.iface.removePluginMenu(self.menu, self.action)
-        self.iface.removeToolBarIcon(self.action)
+        #self.iface.removeToolBarIcon(self.action)
 
     def run(self): 
         print("Default implementation.")
