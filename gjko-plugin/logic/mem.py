@@ -5,32 +5,9 @@ from PyQt4.QtGui import *
 from ..DEFINES import *
 from ..util import layer_helper
 
-
-def build_neighbors():
-    layer_max_ext = layer_helper.get_layer(DEFINES.LAYER_MAX_EXTENSION)
-    layer_vols = layer_helper.get_layer(DEFINES.LAYER_VOLUMES)
-    layer_neighbors = layer_helper.get_layer(DEFINES.LAYER_NEIGHBORS)
-
-    features_max_exts = helper.load_features(layer_max_ext)
-    features_vols = helper.load_features(layer_vols)
-    
-    index = helper.build_spatialindex(features_vols)
-    new_features = []
-    for f in features_max_exts.values(): 
-        ids = index.intersects(f.geometry().boundingBox())
-        neighbors = []
-        fet = QgsFeature()
-        fet.setGeometry(f.geometry())
-        for i in ids:
-            if f.geometry().contains(features_vols[i].geometry()):
-                neighbors.append(features_vols[i][FIELD_UUID])
-        fet.setAttributes([ neighbors[0], ','.join(neighbors), 0.0])
-        new_features.append(fet)
-    layer_neighbors.startEditing()
-    layer_neighbors.dataProvider().addFeatures(new_features)
-    layer_neighbors.commitChanges()
-
-
+"""
+ Merge geometries from features list that touch geom geometry.
+"""
 def merge(geom, features):
     while True:
         breakloop = True

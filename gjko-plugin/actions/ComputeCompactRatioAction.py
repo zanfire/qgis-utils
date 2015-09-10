@@ -21,9 +21,7 @@ class ComputeCompactRatioAction(Action):
             volumes_layer = layer_helper.get_layer(self.dlg.volumes_layer_name())
             layer = self.initialize(self.dlg.working_layer_name(), volumes_layer)
             self.compute(layer, volumes_layer)
-        else:
-            print("Cancel!")
-        print("Completed.")
+            print("Completed.")
 
     def initialize(self, name, baselayer):
         layer = layer_helper.get_layer(name)
@@ -33,7 +31,7 @@ class ComputeCompactRatioAction(Action):
             return layer
         # Check if exists layer name
         # Create layer.
-        layer = layer_helper.create_layer(name, LAYER_MEM_FIELDS, baselayer)
+        layer = layer_helper.create_layer(name, LAYER_MEM_INTERMEDIATE_FIELDS, baselayer)
         return layer
 
     def compute(self, layer, volumes):
@@ -77,7 +75,7 @@ class ComputeCompactRatioAction(Action):
         features_id = layer_helper.load_features(l)
         index = layer_helper.build_spatialindex(features_id.values())
  
-        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FIELDS, l)
+        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FINAL_FIELDS, l)
         new_features = []
         for id_lr in features_lr.keys():
             feature = [ ]
@@ -95,7 +93,7 @@ class ComputeCompactRatioAction(Action):
                     feature.append(QgsFeature(layer.pendingFields()))
                     feature[idx].setGeometry(geom)
                     feature[idx][FIELD_CATID] = f[FIELD_CATID] + '_' + str(idx)
-                    feature[idx][FIELD_COMPACT_RATIO] = f[FIELD_MULTIPLE_COMPACT_RATIO]
+                    feature[idx][FIELD_COMPACT_RATIO] = 0.0
                     idx += 1
             new_features.extend(feature)
         mem.compute_multiple_compact_ratio2(index, new_features, features_id)
