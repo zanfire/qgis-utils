@@ -27,7 +27,7 @@ class Ui_Dialog(object):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(231, 140)
         self.verticalLayoutWidget = QtGui.QWidget(Dialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 211, 121))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 216, 121))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -82,7 +82,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Navigate", None))
         self.maxLabel.setText(_translate("Dialog", "TextLabel", None))
         self.previousButton.setText(_translate("Dialog", "<<", None))
         self.currentButton.setText(_translate("Dialog", "Current", None))
