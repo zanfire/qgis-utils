@@ -32,6 +32,9 @@ def get_layer(name):
 def load_features(layer):
     return {f.id(): f for f in layer.getFeatures()}
 
+def load_features_with_id(id, layer):
+    return {f[id]: f for f in layer.getFeatures()}
+
 def build_spatialindex(features):
     index = QgsSpatialIndex()
     for f in features:
