@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>401</width>
-    <height>270</height>
+    <height>394</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
      <x>10</x>
      <y>10</y>
      <width>381</width>
-     <height>255</height>
+     <height>375</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -52,17 +52,17 @@
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Energy certification layer:</string>
+       <string>EPCs CSV file:</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="certificateCombo">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QLineEdit" name="epcEdit"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="epcOpenButton">
+      <property name="text">
+       <string>Select file</string>
       </property>
      </widget>
     </item>
@@ -80,6 +80,23 @@
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>ISTAT CSV file:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="istatEdit"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="istatOpenButton">
+      <property name="text">
+       <string>Select file</string>
       </property>
      </widget>
     </item>
