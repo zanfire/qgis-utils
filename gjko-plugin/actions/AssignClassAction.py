@@ -1,11 +1,11 @@
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import * 
+from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 
 from Action import Action
 from ..dialogs import AssignClassDialog
-from ..util import layer_helper
+from ..util import layer_helper, ISTAT
 from ..DEFINES import *
 from ..logic import mem
 
@@ -18,24 +18,34 @@ class AssignClassAction(Action):
         self.dlg.show()
         result = self.dlg.exec_() 
         if result == 1:
-            energy_layer = layer_helper.get_layer(self.dlg.energy_layer_name())
-            cert_layer = layer_helper.get_layer(self.dlg.certificate_layer_name())
-            istat_layer = layer_helper.get_layer(self.dlg.istat_layer_name())
-            self.compute_epoch(energy_layer, cert_layer, istat_layer)
+            self.initialize()
+            self.compute_epoch_istat()
+            #self.compute_epoch(energy_layer, istat_layer)
             print("Completed.")
 
-    def initialize(self, name, baselayer):
-        layer = layer_helper.get_layer(name)
-        if layer != None:
-            # Error or not?
-            # Fill with needed attribute! 
-            return layer
-        # Check if exists layer name
-        # Create layer.
-        layer = layer_helper.create_layer(name, LAYER_MEM_INTERMEDIATE_FIELDS, baselayer)
-        return layer
+    def initialize(self):
+        self.energy_layer = layer_helper.get_layer(self.dlg.energy_layer_name())
+        self.istat_layer = layer_helper.get_layer(self.dlg.istat_layer_name())
+        self.istat_csv = ISTAT.ISTATCSV()
+        self.istat_csv.load(self.dlg.istat_csv_file())
 
-    def compute_epoch(self, energy_layer, cert_layer, istat_layer):
+    def compute_epoch_istat(self):
+        istat_features = layer_helper.load_features(self.istat_layer)
+        index = layer_helper.build_spatialindex(istat_features.values())
+
+        self.energy_layer.startEditing()
+        for f in self.energy_layer.getFeatures():
+            ids = index.intersects(f.geometry().boundingBox())
+            for i in ids:
+                codistat = str(int(istat_features[i]['SEZ2011']))
+                f[FIELD_EPOCH] = self.istat_csv.get(codistat)
+                f[FIELD_CLASS] = self.istat_csv.get(codistat)
+                self.energy_layer.updateFeature(f)
+        self.energy_layer.commitChanges()
+
+
+
+    def compute_epoch(self):
         istat_features = layer_helper.load_features(istat_layer)
         index = layer_helper.build_spatialindex(istat_features.values())
         # For each building I need to determine the epoch.

@@ -34,5 +34,5 @@ LAYER_MEM_INTERMEDIATE_FIELDS = [
 LAYER_MEM_FINAL_FIELDS = [ 
         QgsField(FIELD_CATID, QVariant.String),
         QgsField(FIELD_COMPACT_RATIO,  QVariant.Double),
-        QgsField(FIELD_EPOCH, QVariant.Int),
+        QgsField(FIELD_EPOCH, QVariant.String),
         QgsField(FIELD_CLASS, QVariant.String)]
