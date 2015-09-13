@@ -21,6 +21,9 @@ FIELD_DISPERSING_SURFACE        = 'DISP_SURF'
 FIELD_COMPACT_RATIO             = 'COMP_RATIO'
 FIELD_EPOCH                     = 'EPOCH'
 FIELD_CLASS                     = 'CLASS'
+#FIELD_CODCAT                    = 'COD_CAD'
+FIELD_CODISTAT                  = 'COD_ISTAT'
+FIELD_EPCs_AVAILABLE            = 'EPCS_AVAI'
 
 LAYER_MEM_INTERMEDIATE_FIELDS = [ 
         QgsField(FIELD_CATID, QVariant.String),
@@ -35,4 +38,7 @@ LAYER_MEM_FINAL_FIELDS = [
         QgsField(FIELD_CATID, QVariant.String),
         QgsField(FIELD_COMPACT_RATIO,  QVariant.Double),
         QgsField(FIELD_EPOCH, QVariant.String),
-        QgsField(FIELD_CLASS, QVariant.String)]
+        QgsField(FIELD_CLASS, QVariant.String),
+        QgsField(FIELD_CODISTAT, QVariant.String),
+        QgsField(FIELD_CODCAT, QVariant.String),
+        QgsField(FIELD_EPCs_AVAILABLE, QVariant.Int)]

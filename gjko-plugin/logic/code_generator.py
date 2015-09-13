@@ -28,8 +28,15 @@ For non residential buildings
 >=2006    En1-F.1     En1-F.2     En1-F.3     En1-F.4     En1-F.5     En1-F.6     En1-F.7""
 """
 
-def get_code(prefix, epoch, sv):
+def get_code(prefix, epoch_str, sv):
     construction_age = ''
+    # convert epoch str in first value
+    epoch = 1900
+    if epoch_str.startswith('<=') or epoch_str.startswith('>='):
+        epoch = int(epoch_str[2:4])
+    else:
+        epoch = int(epoch_str[:4])
+
     if epoch <= 1945: construction_age = 'A'          
     elif epoch in range(1946, 1960): construction_age = 'B'          
     elif epoch in range(1961, 1980): construction_age = 'C'          

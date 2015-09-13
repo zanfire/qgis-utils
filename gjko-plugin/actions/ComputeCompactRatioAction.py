@@ -94,6 +94,8 @@ class ComputeCompactRatioAction(Action):
                     feature[idx].setGeometry(geom)
                     feature[idx][FIELD_CATID] = f[FIELD_CATID] + '_' + str(idx)
                     feature[idx][FIELD_COMPACT_RATIO] = 0.0
+                    feature[idx][FIELD_CODCAT] = f[FIELD_CATID]
+                    feature[idx][FIELD_EPCs_AVAILABLE] = 0
                     idx += 1
             new_features.extend(feature)
         mem.compute_multiple_compact_ratio2(index, new_features, features_id)

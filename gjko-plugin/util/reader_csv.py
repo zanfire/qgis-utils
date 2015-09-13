@@ -14,7 +14,7 @@ SEZ2011,SEZ_period
 
 """
 
-class ISTATCSV:
+class ISTAT:
 
     def __init__(self):
         self.filename = None
@@ -32,9 +32,35 @@ class ISTATCSV:
 
     def get(self, istat):
         if not self.valid: 
-            return 'NOT_VALID'
+            return None
         try:
             #return 'TRY_FIND' + str(istat)
             return self.table[istat]
         except:
-            return 'NOT_FOUND'
+            return None
+
+
+class EPCs:
+
+    def __init__(self):
+        self.filename = None
+        self.valid = False
+        self.table = None
+
+    def load(self, filename):
+        try:
+            with open(filename, 'rb') as csvfile:
+                result = csv.reader(csvfile, delimiter=',', quotechar='\\')
+                self.table = { row[0]: row[1:] for row in result }
+                self.valid = True
+        except:
+            self.valid = False
+
+    def get(self, cadastre):
+        if not self.valid: 
+            return None
+        try:
+            #return 'TRY_FIND' + str(istat)
+            return self.table[istat]
+        except:
+            return None

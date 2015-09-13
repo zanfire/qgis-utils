@@ -5,9 +5,9 @@ from qgis.core import *
 
 from Action import Action
 from ..dialogs import AssignClassDialog
-from ..util import layer_helper, ISTAT
+from ..util import layer_helper, reader_csv
 from ..DEFINES import *
-from ..logic import mem
+from ..logic import mem, code_generator
 
 class AssignClassAction(Action):
     def __init__(self, iface, menu_name):
@@ -26,7 +26,7 @@ class AssignClassAction(Action):
     def initialize(self):
         self.energy_layer = layer_helper.get_layer(self.dlg.energy_layer_name())
         self.istat_layer = layer_helper.get_layer(self.dlg.istat_layer_name())
-        self.istat_csv = ISTAT.ISTATCSV()
+        self.istat_csv = reader_csv.ISTAT()
         self.istat_csv.load(self.dlg.istat_csv_file())
 
     def compute_epoch_istat(self):
@@ -38,8 +38,12 @@ class AssignClassAction(Action):
             ids = index.intersects(f.geometry().boundingBox())
             for i in ids:
                 codistat = str(int(istat_features[i]['SEZ2011']))
-                f[FIELD_EPOCH] = self.istat_csv.get(codistat)
-                f[FIELD_CLASS] = self.istat_csv.get(codistat)
+                epoch = self.istat_csv.get(codistat)
+                if epoch == None:
+                    continue
+                f[FIELD_EPOCH] = epoch
+                f[FIELD_CLASS] = code_generator.get_code_for_residential_building(f[FIELD_EPOCH], f[FIELD_COMPACT_RATIO])
+                f[FIELD_CODISTAT] = codistat
                 self.energy_layer.updateFeature(f)
         self.energy_layer.commitChanges()
 
