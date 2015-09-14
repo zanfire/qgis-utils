@@ -12,7 +12,8 @@ class SpatialJoinDialog(QtGui.QDialog):
         for l in layers:
             self.ui.volumesCombo.addItem(l.name())
             self.ui.cadastreCombo.addItem(l.name())
- 
+            self.ui.cadastreTerrainCombo.addItem(l.name())
+
     def working_layer_name(self):
         return self.ui.layerName.text()
     
@@ -21,4 +22,7 @@ class SpatialJoinDialog(QtGui.QDialog):
 
     def cadastre_layer_name(self):
         return str(self.ui.cadastreCombo.currentText())
+
+    def cadastre_terrain_layer_name(self):
+        return str(self.ui.cadastreTerrainCombo.currentText())
 
