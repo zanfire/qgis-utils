@@ -16,6 +16,7 @@ class Gjko:
         # Save reference to the QGIS interface
         self.iface = iface
         self.actions = []
+        self.actions.append(SpatialJoinAction(iface, menuName))
         self.actions.append(ComputeCompactRatioAction(iface, menuName))
         self.actions.append(AssignClassAction(iface, menuName))
         self.actions.append(ManualCheckAction(iface, menuName))
