@@ -2,9 +2,10 @@
 from PyQt4.QtCore import * 
 from PyQt4.QtGui import *
 from qgis.core import *
+import time
 
 from Action import Action
-from ..dialogs import ComputeCompactRatioDialog
+from ..dialogs import ComputeCompactRatioDialog, ProgressDialog
 from ..util import layer_helper
 from ..DEFINES import *
 from ..logic import mem
@@ -18,9 +19,11 @@ class ComputeCompactRatioAction(Action):
         self.dlg.show()
         result = self.dlg.exec_() 
         if result == 1:
-            volumes_layer = layer_helper.get_layer(self.dlg.volumes_layer_name())
-            layer = self.initialize(self.dlg.working_layer_name(), volumes_layer)
-            self.compute(layer, volumes_layer)
+            self.volumes = layer_helper.get_layer(self.dlg.volumes_layer_name())
+            self.layer = self.initialize(self.dlg.working_layer_name(), self.volumes)
+            #self.progress = ProgressDialog()
+            #self.progress.show()
+            self.compute()
             print("Completed.")
 
     def initialize(self, name, baselayer):
@@ -34,18 +37,19 @@ class ComputeCompactRatioAction(Action):
         layer = layer_helper.create_layer(name, LAYER_MEM_INTERMEDIATE_FIELDS, baselayer)
         return layer
 
-    def compute(self, layer, volumes):
+    def compute(self):
+        t1 = time.clock()
         QgsMessageLog.logMessage("Starting compation ...", "Gjko", QgsMessageLog.INFO)
         
-        features = volumes.getFeatures()
-        features_id = layer_helper.load_features(volumes)
+        features = self.volumes.getFeatures()
+        features_id = layer_helper.load_features(self.volumes)
         index = layer_helper.build_spatialindex(features_id.values())
         new_features = []
         features_lr = {}
 
         for f in features:
             QgsMessageLog.logMessage("Working on " + str(f.id())+" feature.", "Gjko", QgsMessageLog.INFO)
-            feature = QgsFeature(layer.pendingFields())
+            feature = QgsFeature(self.layer.pendingFields())
             feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
             # Compute comapct ratio 
             mem.compute_simple_compact_ratio(f, feature)
@@ -62,15 +66,17 @@ class ComputeCompactRatioAction(Action):
         #    mem.compute_multiple_compact_ratio(features_lr[id_lr])
 
         QgsMessageLog.logMessage("Adding " + str(len(new_features))+" new features.", "Gjko", QgsMessageLog.INFO)
-        layer.startEditing()
-        layer.dataProvider().addFeatures(new_features)
-        layer.commitChanges()
-
+        self.layer.startEditing()
+        self.layer.dataProvider().addFeatures(new_features)
+        self.layer.commitChanges()
+        t2 = time.clock()
         if self.dlg.simplifyLayerCheck():
-            self.compute_simplify(layer, features_lr)
+            self.compute_simplify(self.layer, features_lr)
         if self.dlg.create_intersection_layer_check():
-            self.create_intersection_layer(layer, index, features_id)
+            self.create_intersection_layer(self.layer, index, features_id)
+        t3 = time.clock()
 
+        print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
     def compute_simplify(self, l, features_lr):
         features_id = layer_helper.load_features(l)
         index = layer_helper.build_spatialindex(features_id.values())
@@ -84,7 +90,9 @@ class ComputeCompactRatioAction(Action):
             for f in features:
                 insert = True
                 g = f.geometry()
+                #print("Entering merge ...")
                 geom = mem.merge(g, features)
+                #print("Exiting merge ...")
                 for fe in feature:
                     if geom.equals(fe.geometry()) or geom.contains(fe.geometry()):
                         insert = False

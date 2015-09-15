@@ -1,4 +1,5 @@
 import csv
+import sys
 
 """
 This is an helper class that read a CSV file in a pre-defined format.
@@ -19,15 +20,21 @@ class ISTAT:
     def __init__(self):
         self.filename = None
         self.valid = False
-        self.table = None
+        self.table = {}
 
     def load(self, filename):
         try:
-            with open(filename, 'rb') as csvfile:
-                result = csv.reader(csvfile, delimiter=',', quotechar='\\')
-                self.table = { row[0]: row[1] for row in result }
+            with open(filename, 'rU') as csvfile:
+                result = csv.reader(csvfile, csv.excel) #delimiter=',', quotechar='\\')
+                for row in result:
+                    print("Adding row: " + str(row))
+                    if len(row) >= 2:
+                        self.table[str(row[0])] = str(row[1])
                 self.valid = True
+        except csv.Error as e:
+            print('file %s, %s' % (filename, e))
         except:
+            print('Exception: ' + str(sys.exc_info()[0]))
             self.valid = False
 
     def get(self, istat):

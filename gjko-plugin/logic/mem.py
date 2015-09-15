@@ -4,12 +4,15 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ..DEFINES import *
 from ..util import layer_helper
+import pdb
 
 """
  Merge geometries from features list that touch geom geometry.
 """
 def merge(geom, features):
+    count = 0
     while True:
+        count += 1
         breakloop = True
         for f in features:
             g = f.geometry()
@@ -17,12 +20,21 @@ def merge(geom, features):
                 continue
             if geom.contains(g):
                 continue
+            if geom.overlaps(g):
+                continue
+            if geom.within(g):
+                geom = QgsGeometry(g)
+                breakloop = False
+                break
             if not geom.disjoint(g) or geom.touches(g):
                 geom = QgsGeometry(geom.combine(g))
                 breakloop = False
                 break
         if breakloop:
             break
+        if count >= 10000:
+            pyqtRemoveInputHook()
+            pdb.set_trace()
     return geom
 
 def get_intersection(g1, g2):

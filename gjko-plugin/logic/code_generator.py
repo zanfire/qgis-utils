@@ -31,13 +31,16 @@ For non residential buildings
 def get_code(prefix, epoch_str, sv):
     construction_age = ''
     # convert epoch str in first value
-    epoch = 1900
-    if epoch_str.startswith('<=') or epoch_str.startswith('>='):
+    epoch = 0
+    if epoch_str == None or epoch_str == '':
+        epoch = 0
+    elif epoch_str.startswith('<=') or epoch_str.startswith('>='):
         epoch = int(epoch_str[2:4])
     else:
         epoch = int(epoch_str[:4])
 
-    if epoch <= 1945: construction_age = 'A'          
+    if epoch == 0: construction_age = 'X'
+    elif epoch <= 1945: construction_age = 'A'          
     elif epoch in range(1946, 1960): construction_age = 'B'          
     elif epoch in range(1961, 1980): construction_age = 'C'          
     elif epoch in range(1981, 1990): construction_age = 'D'          
