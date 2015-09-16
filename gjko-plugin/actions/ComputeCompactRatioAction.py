@@ -48,9 +48,9 @@ class ComputeCompactRatioAction(Action):
         features_lr = {}
 
         for f in features:
-            QgsMessageLog.logMessage("Working on " + str(f.id())+" feature.", "Gjko", QgsMessageLog.INFO)
             feature = QgsFeature(self.layer.pendingFields())
             feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
+            feature[FIELD_TYPE_USAGE] = f[FIELD_CADASTRE_USAGE]
             # Compute comapct ratio 
             mem.compute_simple_compact_ratio(f, feature)
             # Compute dispersing surface.
@@ -102,6 +102,7 @@ class ComputeCompactRatioAction(Action):
                     feature[idx].setGeometry(geom)
                     feature[idx][FIELD_CATID] = f[FIELD_CATID] + '_' + str(idx)
                     feature[idx][FIELD_COMPACT_RATIO] = 0.0
+                    feature[idx][FIELD_TYPE_USAGE] = f[FIELD_TYPE_USAGE]
                     feature[idx][FIELD_CODCAT] = f[FIELD_CATID]
                     feature[idx][FIELD_EPCs_AVAILABLE] = 0
                     idx += 1

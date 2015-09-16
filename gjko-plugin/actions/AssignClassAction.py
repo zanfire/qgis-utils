@@ -42,7 +42,7 @@ class AssignClassAction(Action):
                 if epoch == None:
                     continue
                 f[FIELD_EPOCH] = epoch
-                f[FIELD_CLASS] = code_generator.get_code_for_residential_building(f[FIELD_EPOCH], f[FIELD_COMPACT_RATIO])
+                f[FIELD_CLASS] = code_generator.get_code(f[FIELD_TYPE_USAGE], f[FIELD_EPOCH], f[FIELD_COMPACT_RATIO])
                 f[FIELD_CODISTAT] = codistat
                 self.energy_layer.updateFeature(f)
         self.energy_layer.commitChanges()
