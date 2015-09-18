@@ -22,7 +22,7 @@ class AssignClassDialog(QtGui.QDialog):
     def certificate_layer_name(self):
         return str(self.ui.certificateCombo.currentText())
 
-    def epc_csv_file(self):
+    def epcs_csv_file(self):
         return self.ui.epcEdit.text()
 
     def istat_csv_file(self):
