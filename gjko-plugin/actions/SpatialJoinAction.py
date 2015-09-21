@@ -33,6 +33,7 @@ class SpatialJoinAction(Action):
         self.output_layer = layer_helper.create_layer(self.dlg.working_layer_name(), attributes, self.volumes_layer)
 
     def create_spatial_join(self):
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         cadastre_features = layer_helper.load_features(self.cadastre_layer)
         index = layer_helper.build_spatialindex(cadastre_features.values())
         cadastre_terrain_features = layer_helper.load_features(self.cadastre_terrain_layer)
@@ -89,5 +90,4 @@ class SpatialJoinAction(Action):
         self.output_layer.startEditing()
         self.output_layer.dataProvider().addFeatures(new_features)
         self.output_layer.commitChanges()
-
-
+        QApplication.restoreOverrideCursor()

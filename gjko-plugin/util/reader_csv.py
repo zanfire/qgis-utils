@@ -8,14 +8,20 @@ class BaseReader:
 
     filename = None
     valid = False
+    header = []
     table = {}
 
     def load(self, filename):
         try:
+            first = True
             with open(filename, 'rU') as csvfile:
                 result = csv.reader(csvfile, csv.excel) #delimiter=',', quotechar='\\')
                 for row in result:
-                    self.handle_row(row) 
+                    if first:
+                        self.handle_header(row)
+                    else:
+                        self.handle_row(row)
+                    first = False
                 self.filename = filename
                 self.valid = True
         except AttributeError as e:
@@ -34,6 +40,13 @@ class BaseReader:
         except:
             return None
 
+    def get_element(self, code, header):
+        idx = self.header.index(header)
+        return self.table[code][idx]
+
+    def handle_header(self, row):
+        return False
+
     def handle_row(self, row):
         return False
 
@@ -42,6 +55,10 @@ class ISTAT(BaseReader):
     def __init__(self, filename):
         #super(ISTAT, self).__init__()
         self.load(filename)
+
+    def handle_header(self, row):
+        self.header.extend(row[:2])
+        return True
 
     def handle_row(self, row):
         if len(row) >= 2:
@@ -53,7 +70,8 @@ class ISTAT(BaseReader):
 def codcat_to_epcs(type_usage, cadastre):
     tokens = cadastre.split('|')
     if len(tokens) >= 3:
-        return type_usage + '-' + (str(tokens[2]) + '-' + str(tokens[3]))
+        ret = type_usage + '-' + '-'.join(tokens[2:])
+        return ret
     else:
         return ''
 
@@ -61,6 +79,10 @@ class EPCs(BaseReader):
     def __init__(self, filename):
         #super(EPCs, self).__init__()
         self.load(filename)
+
+    def handle_header(self, row):
+        self.header.extend(row)
+        return True
 
     def handle_row(self, row):
         if len(row) >= 2:

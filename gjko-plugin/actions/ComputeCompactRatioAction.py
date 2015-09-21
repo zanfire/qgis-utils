@@ -38,6 +38,8 @@ class ComputeCompactRatioAction(Action):
         return layer
 
     def compute(self):
+        
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         t1 = time.clock()
         QgsMessageLog.logMessage("Starting compation ...", "Gjko", QgsMessageLog.INFO)
         
@@ -75,13 +77,14 @@ class ComputeCompactRatioAction(Action):
         if self.dlg.create_intersection_layer_check():
             self.create_intersection_layer(self.layer, index, features_id)
         t3 = time.clock()
-
+        QApplication.restoreOverrideCursor()
         print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
+
     def compute_simplify(self, l, features_lr):
         features_id = layer_helper.load_features(l)
         index = layer_helper.build_spatialindex(features_id.values())
  
-        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FINAL_FIELDS, l)
+        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FINAL, l)
         new_features = []
         for id_lr in features_lr.keys():
             feature = [ ]
@@ -100,11 +103,11 @@ class ComputeCompactRatioAction(Action):
                 if insert:
                     feature.append(QgsFeature(layer.pendingFields()))
                     feature[idx].setGeometry(geom)
-                    feature[idx][FIELD_CATID] = f[FIELD_CATID] + '_' + str(idx)
-                    feature[idx][FIELD_COMPACT_RATIO] = 0.0
-                    feature[idx][FIELD_TYPE_USAGE] = f[FIELD_TYPE_USAGE]
+                    feature[idx][FIELD_ID_MEM] = f[FIELD_CATID] + '_' + str(idx)
+                    feature[idx][FIELD_COMPACT_R] = 0.0
+                    feature[idx][FIELD_USE] = f[FIELD_TYPE_USAGE]
                     feature[idx][FIELD_CODCAT] = f[FIELD_CATID]
-                    feature[idx][FIELD_EPCs_AVAILABLE] = 0
+                    feature[idx][FIELD_ID_EPC] = ''
                     idx += 1
             new_features.extend(feature)
         mem.compute_multiple_compact_ratio2(index, new_features, features_id)

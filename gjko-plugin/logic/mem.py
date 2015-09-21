@@ -105,5 +105,5 @@ def compute_multiple_compact_ratio2(index, sfeatures, features):
                 total_vol += f[FIELD_HEIGHT] * f[FIELD_AREA]
                 total_disp += f[FIELD_DISPERSING_SURFACE]
         mcr = total_disp / total_vol
-        feature[FIELD_COMPACT_RATIO] = mcr
+        feature[FIELD_COMPACT_R] = mcr
 

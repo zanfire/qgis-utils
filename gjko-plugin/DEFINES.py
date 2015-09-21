@@ -47,3 +47,73 @@ LAYER_MEM_FINAL_FIELDS = [
         QgsField(FIELD_TYPE_USAGE,  QVariant.String),
         QgsField(FIELD_CODCAT, QVariant.String),
         QgsField(FIELD_EPCs_AVAILABLE, QVariant.Int)]
+
+# Final tables
+
+FIELD_ID_MEM      = 'ID_MEM' #9   identifier of the MEM building,  only buildings that presumably use heating and/or cooling
+FIELD_USE         = 'USE' #3   residential (E1) or non-residential (En1) building      
+FIELD_ID_EPC      = 'ID_EPC' #6   identifier of EPCs data     USE + codice catastale
+FIELD_TYPOLOGY    = 'TYPOLOGY' #8   identifier of compactness-age typology (serve compact_r e age)  A1, A2,
+FIELD_ID_ISTAT    = 'ID_ISTAT' #8   identifier of ISTAT zone
+FIELD_ID_OMI      = 'ID_OMI' #6   identifier of OMI zone    
+# = '' Energy fields   #    descrizione da dove note
+FIELD_AREA        = 'AREA' #4   footprint building area area   
+FIELD_FLOOR_AREA  = 'FLOOR_AREA' #10      (sommatoria un-vol_MEM)  
+FIELD_VOLUME      = 'VOLUME' #6       (sommatoria un-vol_MEM)  
+FIELD_DISP_SURF   = 'DISP_SURF' #9   dispersing surface  (sommatoria un-vol_MEM)  
+FIELD_COMPACT_R   = 'COMPACT_R' #9   S/V (considera tutte le un-vol_MEM) 
+FIELD_WALL_SURF   = 'WALL_SURF' #9   walls surface   (sommatoria un-vol_MEM)  
+FIELD_AGE         = 'AGE' #3       ID_EPC o ID_ISTAT   da fare per ID_EPC
+FIELD_WIND_R      = 'WIND_R' #6   window ratio (to dispersing surface)    ID_EPC o TYPOLOGY   wind_r da verificare per typology
+FIELD_WIND_SURF   = 'WIND_SURF' #9   window surface  disp_surf*wind_r    
+FIELD_U_ENV       = 'U_ENV' #5   Envelope U-value    ID_EPC o TYPOLOGY   
+FIELD_U_ROOF      = 'U_ROOF' #6   Roof U-value    ID_EPC o TYPOLOGY   
+FIELD_U_GROUND    = 'U_GROUND' #8   Ground U-value  ID_EPC o TYPOLOGY   
+FIELD_U_WIND      = 'U_WIND' #6   Window U-value  ID_EPC o TYPOLOGY   
+FIELD_EPH         = 'EPH' #3   Primary Energy Heating  ID_EPC o TYPOLOGY   
+FIELD_ETH         = 'ETH' #3   Thermal Energy Heating  ID_EPC o TYPOLOGY   
+FIELD_ETC         = 'ETC' #3   Thermal Energy Cooling  ID_EPC o TYPOLOGY   
+FIELD_EFER        = 'EFER' #4   Energy from RES ID_EPC o TYPOLOGY   
+FIELD_EPW         = 'EPW' #3   Primary Energy DHW  ID_EPC o TYPOLOGY   
+FIELD_EPT         = 'EPT' #3   Primary Energy Total    ID_EPC o TYPOLOGY   
+FIELD_E_HEAT      = 'E_HEAT' #6   overall efficiency of the heating system    ID_EPC o TYPOLOGY   
+FIELD_E_DHW       = 'E_DHW' #5   overall efficiency of the dhw system    ID_EPC o TYPOLOGY   
+FIELD_E_H_DHW     = 'E_H_DHW' #7   overall efficiency of the heating & dhw system  ID_EPC o TYPOLOGY   
+FIELD_SUP_FV      = 'SUP_FV' #6   surface of photovoltaic panels  ID_EPC  if not available use 0.
+FIELD_SUP_ST      = 'SUP_ST' #6   surface of solar thermal panels ID_EPC  if not avialable use 0. 
+
+
+
+LAYER_MEM_FINAL = [ 
+        QgsField(FIELD_ID_MEM, QVariant.String),
+        QgsField(FIELD_USE, QVariant.String),
+        QgsField(FIELD_CODCAT, QVariant.String), # Change to ID_CADASTRE
+        QgsField(FIELD_ID_EPC, QVariant.String),
+        QgsField(FIELD_TYPOLOGY, QVariant.String),
+        QgsField(FIELD_ID_ISTAT, QVariant.String),
+        QgsField(FIELD_ID_OMI, QVariant.String),
+        QgsField(FIELD_AREA, QVariant.Double),
+        QgsField(FIELD_FLOOR_AREA, QVariant.Double),
+        QgsField(FIELD_VOLUME, QVariant.Double),
+        QgsField(FIELD_DISP_SURF, QVariant.Double),
+        QgsField(FIELD_COMPACT_R, QVariant.Double),
+        QgsField(FIELD_WALL_SURF, QVariant.Double),
+        QgsField(FIELD_AGE, QVariant.String),
+        QgsField(FIELD_WIND_R, QVariant.Double),
+        QgsField(FIELD_WIND_SURF, QVariant.Double),
+        QgsField(FIELD_U_ENV, QVariant.Double),
+        QgsField(FIELD_U_ROOF, QVariant.Double),
+        QgsField(FIELD_U_GROUND, QVariant.Double),
+        QgsField(FIELD_U_WIND, QVariant.Double),
+        QgsField(FIELD_EPH, QVariant.Double),
+        QgsField(FIELD_ETH, QVariant.Double),
+        QgsField(FIELD_ETC, QVariant.Double),
+        QgsField(FIELD_EFER, QVariant.Double),
+        QgsField(FIELD_EPW, QVariant.Double),
+        QgsField(FIELD_EPT, QVariant.Double),
+        QgsField(FIELD_E_HEAT, QVariant.Double),
+        QgsField(FIELD_E_DHW, QVariant.Double),
+        QgsField(FIELD_E_H_DHW, QVariant.Double),
+        QgsField(FIELD_SUP_FV, QVariant.Double),
+        QgsField(FIELD_SUP_ST, QVariant.Double)
+        ]
