@@ -19,8 +19,10 @@ def create_layer(name, attributes, baselayer = None, layertype = 'Polygon'):
     QgsMapLayerRegistry.instance().addMapLayer(layer) 
     return layer
 
-def save_layer(layer, name,location):
-    error = QgsVectorFileWriter.writeAsVectorFormat(layer, os.path.join(location, name + ".shp"), "CP1250", None, "ESRI Shapefile")
+def save_layer(layer, location):
+    error = QgsVectorFileWriter.writeAsVectorFormat(layer, location, "CP1250", layer.dataProvider().crs(), "ESRI Shapefile")
+    #error = QgsVectorFileWriter.writeAsShapefile(layer, location, "CP1250")
+    return error
 
 def get_layer(name):
     layers = iface.legendInterface().layers()

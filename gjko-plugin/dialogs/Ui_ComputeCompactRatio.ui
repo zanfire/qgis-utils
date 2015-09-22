@@ -50,35 +50,19 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="onlySelectedCheckbox">
-      <property name="enabled">
+     <widget class="QCheckBox" name="keepTemporaryLayerCheckBox">
+      <property name="text">
+       <string>Keep temporary layer (debug)</string>
+      </property>
+      <property name="checked">
        <bool>false</bool>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="text">
-       <string>Use only selected features in cartograpy layer</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="simplifyLayerCheckBox">
-      <property name="text">
-       <string>Create simplified layer</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QCheckBox" name="intersectionLayerCheckBox">
       <property name="text">
-       <string>Create interesection layer</string>
+       <string>Create interesection layer (debug)</string>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -109,14 +93,14 @@
     <item>
      <widget class="QLineEdit" name="saveFolder">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="locationButton">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="text">
        <string>Location</string>

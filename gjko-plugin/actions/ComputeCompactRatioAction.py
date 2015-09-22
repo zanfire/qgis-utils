@@ -11,6 +11,10 @@ from ..DEFINES import *
 from ..logic import mem
 
 class ComputeCompactRatioAction(Action):
+    """
+    Compute energy efficency base value.
+    """
+    
     def __init__(self, iface, menu_name):
         super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute energy efficency values...")
 
@@ -19,26 +23,26 @@ class ComputeCompactRatioAction(Action):
         self.dlg.show()
         result = self.dlg.exec_() 
         if result == 1:
-            self.volumes = layer_helper.get_layer(self.dlg.volumes_layer_name())
-            self.layer = self.initialize(self.dlg.working_layer_name(), self.volumes)
-            #self.progress = ProgressDialog()
-            #self.progress.show()
+            # Initialize and compute
+            self.initialize(self.dlg.working_layer_name())
             self.compute()
             print("Completed.")
 
-    def initialize(self, name, baselayer):
-        layer = layer_helper.get_layer(name)
-        if layer != None:
-            # Error or not?
-            # Fill with needed attribute! 
-            return layer
-        # Check if exists layer name
-        # Create layer.
-        layer = layer_helper.create_layer(name, LAYER_MEM_INTERMEDIATE_FIELDS, baselayer)
-        return layer
+    def initialize(self, name):
+        self.name = name
+        self.volumes = layer_helper.get_layer(self.dlg.volumes_layer_name())
+        self.energy_layer = layer_helper.get_layer(name)
+        if self.energy_layer != None:
+            # TODO: Notify user about current state.
+            print("Notify user.")
+        else:
+            self.energy_layer = layer_helper.create_layer(name, LAYER_MEM_FINAL, self.volumes)
+            self.wip_layer = layer_helper.create_layer(name + '_temporary', LAYER_MEM_INTERMEDIATE_FIELDS, self.volumes)
 
     def compute(self):
-        
+        """
+        Creating final layer trough an intermediate layer.
+        """
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         t1 = time.clock()
         QgsMessageLog.logMessage("Starting compation ...", "Gjko", QgsMessageLog.INFO)
@@ -49,8 +53,9 @@ class ComputeCompactRatioAction(Action):
         new_features = []
         features_lr = {}
 
+        # Filling working/temporary layer.
         for f in features:
-            feature = QgsFeature(self.layer.pendingFields())
+            feature = QgsFeature(self.wip_layer.pendingFields())
             feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
             feature[FIELD_TYPE_USAGE] = f[FIELD_CADASTRE_USAGE]
             # Compute comapct ratio 
@@ -68,23 +73,36 @@ class ComputeCompactRatioAction(Action):
         #    mem.compute_multiple_compact_ratio(features_lr[id_lr])
 
         QgsMessageLog.logMessage("Adding " + str(len(new_features))+" new features.", "Gjko", QgsMessageLog.INFO)
-        self.layer.startEditing()
-        self.layer.dataProvider().addFeatures(new_features)
-        self.layer.commitChanges()
+        self.wip_layer.startEditing()
+        self.wip_layer.dataProvider().addFeatures(new_features)
+        self.wip_layer.commitChanges()
         t2 = time.clock()
-        if self.dlg.simplifyLayerCheck():
-            self.compute_simplify(self.layer, features_lr)
+
+        self.compute_final_layer(self.wip_layer, features_lr)
+
         if self.dlg.create_intersection_layer_check():
             self.create_intersection_layer(self.layer, index, features_id)
         t3 = time.clock()
+        
+        #
+        if not self.dlg.keep_temporary_layer():
+            QgsMapLayerRegistry.instance().removeMapLayer(self.wip_layer.id())
+            self.wip_layer = None
+        
         QApplication.restoreOverrideCursor()
         print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
-
-    def compute_simplify(self, l, features_lr):
+        
+        if self.dlg.location() != '':
+            result = layer_helper.save_layer(self.energy_layer, self.dlg.location())
+            if result == QgsVectorFileWriter.NoError:
+                layer_name = self.energy_layer.name()
+                QgsMapLayerRegistry.instance().removeMapLayer(self.energy_layer.id())
+                self.energy_layer = self.iface.addVectorLayer(self.dlg.location(), layer_name, "ogr") 
+    
+    def compute_final_layer(self, l, features_lr):
         features_id = layer_helper.load_features(l)
         index = layer_helper.build_spatialindex(features_id.values())
  
-        layer = layer_helper.create_layer(l.name() + "_simplified", LAYER_MEM_FINAL, l)
         new_features = []
         for id_lr in features_lr.keys():
             feature = [ ]
@@ -101,7 +119,7 @@ class ComputeCompactRatioAction(Action):
                         insert = False
                         break
                 if insert:
-                    feature.append(QgsFeature(layer.pendingFields()))
+                    feature.append(QgsFeature(self.energy_layer.pendingFields()))
                     feature[idx].setGeometry(geom)
                     feature[idx][FIELD_ID_MEM] = f[FIELD_CATID] + '_' + str(idx)
                     feature[idx][FIELD_COMPACT_R] = 0.0
@@ -111,9 +129,9 @@ class ComputeCompactRatioAction(Action):
                     idx += 1
             new_features.extend(feature)
         mem.compute_multiple_compact_ratio2(index, new_features, features_id)
-        layer.startEditing()
-        layer.dataProvider().addFeatures(new_features)
-        layer.commitChanges()
+        self.energy_layer.startEditing()
+        self.energy_layer.dataProvider().addFeatures(new_features)
+        self.energy_layer.commitChanges()
 
     def create_intersection_layer(self, l, index, features):
         layer = layer_helper.create_layer(l.name() + "_intersection", [], l, 'LineString')
