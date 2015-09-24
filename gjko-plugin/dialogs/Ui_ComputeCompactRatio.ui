@@ -35,7 +35,7 @@
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Volumes layer:</string>
+       <string>Input layer:</string>
       </property>
      </widget>
     </item>
@@ -50,43 +50,33 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="keepTemporaryLayerCheckBox">
-      <property name="text">
-       <string>Keep temporary layer (debug)</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="intersectionLayerCheckBox">
-      <property name="text">
-       <string>Create interesection layer (debug)</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Layer name:</string>
+       <string>Volumes layer:</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLineEdit" name="layerName">
       <property name="text">
-       <string>Energy_values</string>
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="locationButton_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Location</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Save here:</string>
+       <string>Building layer:</string>
       </property>
      </widget>
     </item>
@@ -104,6 +94,16 @@
       </property>
       <property name="text">
        <string>Location</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="intersectionLayerCheckBox">
+      <property name="text">
+       <string>Create interesection layer (debug)</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
       </property>
      </widget>
     </item>

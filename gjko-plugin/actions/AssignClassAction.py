@@ -12,16 +12,10 @@ from ..logic import mem, code_generator
 class AssignClassAction(Action):
     def __init__(self, iface, menu_name):
         super(AssignClassAction, self).__init__(iface, menu_name, "Assign class...")
-        self.dlg = AssignClassDialog() 
+    
+    def create_dialog(self):
+        return AssignClassDialog() 
 
-    def run(self): 
-        self.dlg.show()
-        result = self.dlg.exec_() 
-        if result == 1:
-            self.initialize()
-            self.compute_epoch_istat()
-            #self.compute_epoch(energy_layer, istat_layer)
-            print("Completed.")
 
     def initialize(self):
         self.energy_layer = layer_helper.get_layer(self.dlg.energy_layer_name())
@@ -29,8 +23,7 @@ class AssignClassAction(Action):
         self.istat_csv = reader_csv.ISTAT(self.dlg.istat_csv_file())
         self.epcs_csv = reader_csv.EPCs(self.dlg.epcs_csv_file())
 
-    def compute_epoch_istat(self):
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    def compute(self):
         istat_features = layer_helper.load_features(self.istat_layer)
         index = layer_helper.build_spatialindex(istat_features.values())
 
@@ -52,5 +45,4 @@ class AssignClassAction(Action):
                     f[FIELD_EPCs_AVAILABLE] = 1
                 self.energy_layer.updateFeature(f)
         self.energy_layer.commitChanges()
-        QApplication.restoreOverrideCursor()
 

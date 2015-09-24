@@ -9,25 +9,31 @@ import pdb
 """
  Merge geometries from features list that touch geom geometry.
 """
-def merge(geom, features):
+def merge(feature, features_input):
     count = 0
+    features_output = [ feature ]
+    geom = QgsGeometry(feature.geometry())
     while True:
         count += 1
         breakloop = True
         for f in features:
+            if f in features_out:
+                continue
+            #if geom.equals(g): 
+            #    continue
+            #if geom.contains(g):
+            #    continue
+            #if geom.overlaps(g):
+            #    continue
             g = f.geometry()
-            if geom.equals(g): 
-                continue
-            if geom.contains(g):
-                continue
-            if geom.overlaps(g):
-                continue
             if geom.within(g):
                 geom = QgsGeometry(g)
+                features_out.append(f)
                 breakloop = False
                 break
             if not geom.disjoint(g) or geom.touches(g):
                 geom = QgsGeometry(geom.combine(g))
+                features_out.append(f)
                 breakloop = False
                 break
         if breakloop:
@@ -35,7 +41,19 @@ def merge(geom, features):
         if count >= 10000:
             pyqtRemoveInputHook()
             pdb.set_trace()
-    return geom
+    return (geom, features_output)
+
+def update_base_attributes(feature, geometry, features_set):
+    #feature.append(QgsFeature(self.energy_layer.pendingFields()))
+    feature.setGeometry(geom)
+    feature[FIELD_ID_MEM] = feature_raw[FIELD_CATID] + '_' + str(idx)
+    feature[FIELD_COMPACT_R] = 0.0
+    feature[FIELD_USE] = f[FIELD_TYPE_USAGE]
+    feature[FIELD_CODCAT] = f[FIELD_CATID]
+    feature[FIELD_ID_EPC] = ''
+    for f in features_set:
+        feature[FIELD_AREA] += f[FIELD_AREA]
+        feature[FIELD_DISP_SURF] += f[FIELD_DISPERSING_SURFACE] # TODO: rename to one field name not two variation of the same
 
 def get_intersection(g1, g2):
     result = []

@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(398, 282)
+        Dialog.resize(398, 349)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -33,7 +33,7 @@ class Ui_Dialog(object):
         Dialog.setSizePolicy(sizePolicy)
         Dialog.setSizeGripEnabled(False)
         self.verticalLayoutWidget = QtGui.QWidget(Dialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 381, 266))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 381, 331))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -76,6 +76,10 @@ class Ui_Dialog(object):
         self.layerName = QtGui.QLineEdit(self.verticalLayoutWidget)
         self.layerName.setObjectName(_fromUtf8("layerName"))
         self.verticalLayout.addWidget(self.layerName)
+        self.locationButton = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.locationButton.setEnabled(True)
+        self.locationButton.setObjectName(_fromUtf8("locationButton"))
+        self.verticalLayout.addWidget(self.locationButton)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         self.buttonBox = QtGui.QDialogButtonBox(self.verticalLayoutWidget)
@@ -94,6 +98,7 @@ class Ui_Dialog(object):
         self.label_2.setText(_translate("Dialog", "Volumes layer:", None))
         self.label_5.setText(_translate("Dialog", "Cadastre layer:", None))
         self.label_6.setText(_translate("Dialog", "Cadastre terrains layer:", None))
-        self.label_3.setText(_translate("Dialog", "Output layer\'s name:", None))
+        self.label_3.setText(_translate("Dialog", "Save layer:", None))
         self.layerName.setText(_translate("Dialog", "Spatial_join", None))
+        self.locationButton.setText(_translate("Dialog", "Location", None))
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>398</width>
-    <height>282</height>
+    <height>349</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
      <x>10</x>
      <y>10</y>
      <width>381</width>
-     <height>266</height>
+     <height>331</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -86,14 +86,24 @@
     <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Output layer's name:</string>
+       <string>Save layer:</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLineEdit" name="layerName">
       <property name="text">
-       <string>Spatial_join</string>
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="locationButton">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Location</string>
       </property>
      </widget>
     </item>

@@ -105,16 +105,13 @@ class ComputeCompactRatioAction(Action):
  
         new_features = []
         for id_lr in features_lr.keys():
-            feature = [ ]
+            features_temp = [ ]
             idx = 0
-            features = features_lr[id_lr]
-            for f in features:
+            features_cadastre = features_lr[id_lr]
+            for f in features_cadastre:
                 insert = True
-                g = f.geometry()
-                #print("Entering merge ...")
-                geom = mem.merge(g, features)
-                #print("Exiting merge ...")
-                for fe in feature:
+                (geom, feature_set) = mem.merge(f.geometry(), features)
+                for fe in features_temp:
                     if geom.equals(fe.geometry()) or geom.contains(fe.geometry()):
                         insert = False
                         break
@@ -127,7 +124,9 @@ class ComputeCompactRatioAction(Action):
                     feature[idx][FIELD_CODCAT] = f[FIELD_CATID]
                     feature[idx][FIELD_ID_EPC] = ''
                     idx += 1
-            new_features.extend(feature)
+
+            # We have created the final set.
+            new_features.extend(features_temp)
         mem.compute_multiple_compact_ratio2(index, new_features, features_id)
         self.energy_layer.startEditing()
         self.energy_layer.dataProvider().addFeatures(new_features)
