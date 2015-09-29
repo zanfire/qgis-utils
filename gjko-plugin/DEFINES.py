@@ -28,28 +28,10 @@ FIELD_CODISTAT                  = 'COD_ISTAT'
 FIELD_EPCs_AVAILABLE            = 'EPCS_AVAI'
 FIELD_TYPE_USAGE                = 'TYPE_USAGE'
 
-LAYER_MEM_INTERMEDIATE_FIELDS = [ 
-        QgsField(FIELD_CATID, QVariant.String),
-        QgsField(FIELD_AREA,  QVariant.Double),
-        QgsField(FIELD_PERIMETER,  QVariant.Double),
-        QgsField(FIELD_PERIMETER_ADJACENT,  QVariant.Double),
-        QgsField(FIELD_HEIGHT,  QVariant.Double),
-        QgsField(FIELD_TYPE_USAGE,  QVariant.String),
-        QgsField(FIELD_DISPERSING_SURFACE,  QVariant.Double),
-        QgsField(FIELD_COMPACT_RATIO,  QVariant.Double)]
-
-LAYER_MEM_FINAL_FIELDS = [ 
-        QgsField(FIELD_CATID, QVariant.String),
-        QgsField(FIELD_COMPACT_RATIO,  QVariant.Double),
-        QgsField(FIELD_EPOCH, QVariant.String),
-        QgsField(FIELD_CLASS, QVariant.String),
-        QgsField(FIELD_CODISTAT, QVariant.String),
-        QgsField(FIELD_TYPE_USAGE,  QVariant.String),
-        QgsField(FIELD_CODCAT, QVariant.String),
-        QgsField(FIELD_EPCs_AVAILABLE, QVariant.Int)]
 
 # Final tables
 
+FIELD_ID_CADASTRE = 'ID_CAD'
 FIELD_ID_MEM      = 'ID_MEM' #9   identifier of the MEM building,  only buildings that presumably use heating and/or cooling
 FIELD_USE         = 'USE' #3   residential (E1) or non-residential (En1) building      
 FIELD_ID_EPC      = 'ID_EPC' #6   identifier of EPCs data     USE + codice catastale
@@ -84,10 +66,22 @@ FIELD_SUP_ST      = 'SUP_ST' #6   surface of solar thermal panels ID_EPC  if not
 
 
 
-LAYER_MEM_FINAL = [ 
+FIELD_AREA_GROSS = 'AREA_GROSS'
+FIELD_VOL_GROSS = 'VOL_GROSS'
+FIELD_WALL_SURF = 'WALL_SURF'
+FIELD_DISP_SURF = 'DISP_SURF'
+FIELD_AREA_R = 'AREA_R'
+FIELD_AREA_NET = 'AREA_NET'
+FIELD_VOL_R = 'VOL_R'
+FIELD_VOL_NET = 'VOL_NET'
+FIELD_LEVEL_H = 'LEVEL_H'
+FIELD_N_LEVEL = 'N_LEVEL'
+FIELD_FLOOR_AREA = 'FLOOR_AREA'
+
+LAYER_BUILDING_FIELD = [ 
+        QgsField(FIELD_ID_CADASTRE, QVariant.String),
         QgsField(FIELD_ID_MEM, QVariant.String),
         QgsField(FIELD_USE, QVariant.String),
-        QgsField(FIELD_CODCAT, QVariant.String), # Change to ID_CADASTRE
         QgsField(FIELD_ID_EPC, QVariant.String),
         QgsField(FIELD_TYPOLOGY, QVariant.String),
         QgsField(FIELD_ID_ISTAT, QVariant.String),
@@ -116,4 +110,28 @@ LAYER_MEM_FINAL = [
         QgsField(FIELD_E_H_DHW, QVariant.Double),
         QgsField(FIELD_SUP_FV, QVariant.Double),
         QgsField(FIELD_SUP_ST, QVariant.Double)
+        ]
+
+LAYER_VOLUMES_FIELDS = [
+        QgsField(FIELD_ID_CADASTRE, QVariant.String),
+        #un-vol_MEM  identifier of the MEM volumetric unit
+        #USE residential (E1) or non-residential (En1) building
+        #ID_EPC  identifier of EPCs data
+        #TYPOLOGY    identifier of compactness-age typology
+        #ID_ISTAT    identifier of ISTAT zone
+        #ID_OMI  identifier of OMI zone
+        QgsField(FIELD_ID_MEM, QVariant.String),     # identifier of the MEM building belongs to 
+#Energy Fields   descrizione
+        QgsField(FIELD_HEIGHT, QVariant.Double),  # height of the volumetric unit
+        QgsField(FIELD_AREA_GROSS, QVariant.Double),  # gross area
+        QgsField(FIELD_VOL_GROSS, QVariant.Double),   # gross volume
+        QgsField(FIELD_WALL_SURF, QVariant.Double),   # walls surface
+        QgsField(FIELD_DISP_SURF, QVariant.Double),   # dispersing surface
+        QgsField(FIELD_AREA_R, QVariant.Double),  # net area to gross area ratio
+        QgsField(FIELD_AREA_NET, QVariant.Double),    # net area
+        QgsField(FIELD_VOL_R, QVariant.Double),   # net volume to gross volume ratio
+        QgsField(FIELD_VOL_NET, QVariant.Double), # net volume
+        QgsField(FIELD_LEVEL_H, QVariant.Double), # # average level's height
+        QgsField(FIELD_N_LEVEL, QVariant.Double), # # number of levels
+        QgsField(FIELD_FLOOR_AREA, QVariant.Double)  # #net floor area
         ]

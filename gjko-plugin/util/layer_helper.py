@@ -5,7 +5,7 @@ from PyQt4.QtGui import *
 
 import os
 
-def create_layer(name, attributes, baselayer = None, layertype = 'Polygon'):
+def create_layer(name, attributes, baselayer = None, layertype = 'Polygon', addregistry = True):
     layerattr = ''
     if baselayer != None:
         layerattr = '?crs=' + baselayer.crs().authid()
@@ -16,7 +16,8 @@ def create_layer(name, attributes, baselayer = None, layertype = 'Polygon'):
     pr.addAttributes(attributes)
     layer.updateFields()
     layer.commitChanges()
-    QgsMapLayerRegistry.instance().addMapLayer(layer) 
+    if addregistry:
+        QgsMapLayerRegistry.instance().addMapLayer(layer) 
     return layer
 
 def save_layer(layer, location):

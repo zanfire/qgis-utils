@@ -18,119 +18,119 @@ class ComputeCompactRatioAction(Action):
     def __init__(self, iface, menu_name):
         super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute energy efficency values...")
 
-    def run(self): 
-        self.dlg = ComputeCompactRatioDialog() 
-        self.dlg.show()
-        result = self.dlg.exec_() 
-        if result == 1:
-            # Initialize and compute
-            self.initialize(self.dlg.working_layer_name())
-            self.compute()
-            print("Completed.")
+    def create_dialog(self): 
+        return ComputeCompactRatioDialog() 
 
-    def initialize(self, name):
-        self.name = name
-        self.volumes = layer_helper.get_layer(self.dlg.volumes_layer_name())
-        self.energy_layer = layer_helper.get_layer(name)
-        if self.energy_layer != None:
-            # TODO: Notify user about current state.
-            print("Notify user.")
-        else:
-            self.energy_layer = layer_helper.create_layer(name, LAYER_MEM_FINAL, self.volumes)
-            self.wip_layer = layer_helper.create_layer(name + '_temporary', LAYER_MEM_INTERMEDIATE_FIELDS, self.volumes)
+    def initialize(self):
+        self.input_layer = layer_helper.get_layer(self.dlg.input_layer_name())
+        self.volumes_layer = layer_helper.create_layer(self.dlg.volumes_layer_name(), LAYER_VOLUMES_FIELDS, self.input_layer, 'Polygon', False)
+        self.building_layer = layer_helper.create_layer(self.dlg.building_layer_name(), LAYER_BUILDING_FIELD, self.input_layer, 'Polygon', False)
 
-    def compute(self):
+
+    def compute_volumes(self, progress, features, index, features_id, map_cadastre_building):
+        result = []
+        # Filling working/temporary layer.
+        count = 0
+        count_max = len(features_id.values())
+        for f in features:
+            count += 1
+            progress.emit(int(count * (50.0 / count_max)))  
+            feature = QgsFeature(self.volumes_layer.pendingFields())
+            g = f.geometry()
+            print(type(g))
+            feature.setGeometry(QgsGeometry(g))
+            #feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
+            #feature[FIELD_ID_CADASTRE] = f[FIELD_CODCAT] 
+            feature[FIELD_HEIGHT] = f[FIELD_VOLUME_HEIGHT] 
+            feature[FIELD_AREA_GROSS] = g.area()
+            feature[FIELD_VOL_GROSS] = feature[FIELD_HEIGHT] * feature[FIELD_AREA_GROSS]
+            feature[FIELD_WALL_SURF] = g.length()
+            feature[FIELD_DISP_SURF] = mem.disperding_surface(index, g, features_id, feature[FIELD_HEIGHT]) 
+            #feature[FIELD_AREA_R] =
+            #feature[FIELD_AREA_NET] =
+            #feature[FIELD_VOL_R] =
+            #feature[FIELD_VOL_NET] =
+            #feature[FIELD_LEVEL_H] =
+            #feature[FIELD_N_LEVEL] =
+            #feature[FIELD_FLOOR_AREA] =
+            
+            #feature[FIELD_TYPE_USAGE] = f[FIELD_CADASTRE_USAGE]
+            result.append(feature)
+            id_cadastre = f[FIELD_CODCAT]
+            if not id_cadastre in map_cadastre_building.keys():
+                map_cadastre_building[id_cadastre] = [ feature ]
+            else:
+                map_cadastre_building[id_cadastre].append(feature)
+
+        return result
+
+    def compute(self, progress):
         """
         Creating final layer trough an intermediate layer.
         """
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         t1 = time.clock()
-        QgsMessageLog.logMessage("Starting compation ...", "Gjko", QgsMessageLog.INFO)
-        
-        features = self.volumes.getFeatures()
-        features_id = layer_helper.load_features(self.volumes)
+
+        features = self.input_layer.getFeatures()
+        features_id = layer_helper.load_features(self.input_layer)
         index = layer_helper.build_spatialindex(features_id.values())
-        new_features = []
-        features_lr = {}
+        map_cadastre_building = {}
+        self.volumes_features = self.compute_volumes(progress, features, index, features_id, map_cadastre_building)
 
-        # Filling working/temporary layer.
-        for f in features:
-            feature = QgsFeature(self.wip_layer.pendingFields())
-            feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
-            feature[FIELD_TYPE_USAGE] = f[FIELD_CADASTRE_USAGE]
-            # Compute comapct ratio 
-            mem.compute_simple_compact_ratio(f, feature)
-            # Compute dispersing surface.
-            mem.dispersing_surface(index, feature, features_id)
-            new_features.append(feature)
-            id_lr = f[FIELD_CODCAT]
-            if not id_lr in features_lr.keys():
-                features_lr[id_lr] = [ feature ]
-            else:
-                features_lr[id_lr].append(feature)
-
-        #for id_lr in features_lr.keys():
-        #    mem.compute_multiple_compact_ratio(features_lr[id_lr])
-
-        QgsMessageLog.logMessage("Adding " + str(len(new_features))+" new features.", "Gjko", QgsMessageLog.INFO)
-        self.wip_layer.startEditing()
-        self.wip_layer.dataProvider().addFeatures(new_features)
-        self.wip_layer.commitChanges()
         t2 = time.clock()
-
-        self.compute_final_layer(self.wip_layer, features_lr)
-
-        if self.dlg.create_intersection_layer_check():
-            self.create_intersection_layer(self.layer, index, features_id)
-        t3 = time.clock()
         
-        #
-        if not self.dlg.keep_temporary_layer():
-            QgsMapLayerRegistry.instance().removeMapLayer(self.wip_layer.id())
-            self.wip_layer = None
-        
-        QApplication.restoreOverrideCursor()
+        self.building_features = self.compute_building(progress, map_cadastre_building)
+
+        #if self.dlg.create_intersection_layer_check():
+        #    self.create_intersection_layer(self.layer, index, features_id)
+        t3 = time.clock() 
         print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
         
-        if self.dlg.location() != '':
-            result = layer_helper.save_layer(self.energy_layer, self.dlg.location())
-            if result == QgsVectorFileWriter.NoError:
-                layer_name = self.energy_layer.name()
-                QgsMapLayerRegistry.instance().removeMapLayer(self.energy_layer.id())
-                self.energy_layer = self.iface.addVectorLayer(self.dlg.location(), layer_name, "ogr") 
     
-    def compute_final_layer(self, l, features_lr):
-        features_id = layer_helper.load_features(l)
-        index = layer_helper.build_spatialindex(features_id.values())
+    def compute_building(self, progress, map_cadastre_building):
+        #features_id = layer_helper.load_features(l)
+        #index = layer_helper.build_spatialindex(features_id.values())
  
-        new_features = []
-        for id_lr in features_lr.keys():
+        result = []
+        count = 0
+        count_max = len(map_cadastre_building.keys())
+        for cadastre in map_cadastre_building.keys():
+            count += 1
+            progress.emit(50 + int(count * (50.0 / count_max)))  
             features_temp = [ ]
             idx = 0
-            features_cadastre = features_lr[id_lr]
-            for f in features_cadastre:
+            for f in map_cadastre_building[cadastre]:
                 insert = True
-                (geom, feature_set) = mem.merge(f.geometry(), features)
+                (geom, feature_set) = mem.merge(f, map_cadastre_building[cadastre])
                 for fe in features_temp:
                     if geom.equals(fe.geometry()) or geom.contains(fe.geometry()):
                         insert = False
                         break
                 if insert:
-                    feature.append(QgsFeature(self.energy_layer.pendingFields()))
-                    feature[idx].setGeometry(geom)
-                    feature[idx][FIELD_ID_MEM] = f[FIELD_CATID] + '_' + str(idx)
-                    feature[idx][FIELD_COMPACT_R] = 0.0
-                    feature[idx][FIELD_USE] = f[FIELD_TYPE_USAGE]
-                    feature[idx][FIELD_CODCAT] = f[FIELD_CATID]
-                    feature[idx][FIELD_ID_EPC] = ''
+                    features_temp.append(QgsFeature(self.building_layer.pendingFields()))
+                    features_temp[idx].setGeometry(geom)
+                    id_mem = cadastre + '_' + str(idx)
+                    features_temp[idx][FIELD_ID_CADASTRE] = cadastre
+                    features_temp[idx][FIELD_ID_MEM] = id_mem
+                    #features_temp[idx][FIELD_USE] = f[FIELD_TYPE_USAGE]
+                    #features_temp[idx][FIELD_CODCAT] = f[FIELD_CATID]
+                    #features_temp[idx][FIELD_ID_EPC] = ''
+                    for elem in feature_set:
+                        elem[FIELD_ID_MEM] = id_mem
                     idx += 1
-
             # We have created the final set.
-            new_features.extend(features_temp)
-        mem.compute_multiple_compact_ratio2(index, new_features, features_id)
-        self.energy_layer.startEditing()
-        self.energy_layer.dataProvider().addFeatures(new_features)
-        self.energy_layer.commitChanges()
+            result.extend(features_temp)
+#    for feature in sfeatures:
+#        total_vol = 0
+#        total_disp = 0
+#        ids = index.intersects(feature.geometry().boundingBox())
+#        for i in ids:
+#            f = features[i]
+#            if not feature.geometry().disjoint(f.geometry()):
+#                total_vol += f[FIELD_HEIGHT] * f[FIELD_AREA]
+#                total_disp += f[FIELD_DISPERSING_SURFACE]
+#        mcr = total_disp / total_vol
+#        feature[FIELD_COMPACT_R] = mcr
+        return result
 
     def create_intersection_layer(self, l, index, features):
         layer = layer_helper.create_layer(l.name() + "_intersection", [], l, 'LineString')
@@ -149,3 +149,22 @@ class ComputeCompactRatioAction(Action):
         layer.startEditing()
         layer.dataProvider().addFeatures(new_features)
         layer.commitChanges()
+
+    def apply(self):
+        if self.dlg.volumes_layer_path() != '':
+            self.volumes_layer.startEditing()
+            self.volumes_layer.dataProvider().addFeatures(self.volumes_features)
+            self.volumes_layer.commitChanges()
+            result = layer_helper.save_layer(self.volumes_layer, self.dlg.volumes_layer_path())
+            if result == QgsVectorFileWriter.NoError:
+                layer_name = self.dlg.volumes_layer_name()
+                self.iface.addVectorLayer(self.dlg.volumes_layer_path(), layer_name, "ogr") 
+
+        if self.dlg.building_layer_path() != '':
+            self.building_layer.startEditing()
+            self.building_layer.dataProvider().addFeatures(self.building_features)
+            self.building_layer.commitChanges()
+            result = layer_helper.save_layer(self.building_layer, self.dlg.building_layer_path())
+            if result == QgsVectorFileWriter.NoError:
+                layer_name = self.dlg.building_layer_name()
+                self.iface.addVectorLayer(self.dlg.building_layer_path(), layer_name, "ogr") 

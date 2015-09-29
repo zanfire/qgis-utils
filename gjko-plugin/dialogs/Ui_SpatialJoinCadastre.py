@@ -74,6 +74,7 @@ class Ui_Dialog(object):
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.verticalLayout.addWidget(self.label_3)
         self.layerName = QtGui.QLineEdit(self.verticalLayoutWidget)
+        self.layerName.setText(_fromUtf8(""))
         self.layerName.setObjectName(_fromUtf8("layerName"))
         self.verticalLayout.addWidget(self.layerName)
         self.locationButton = QtGui.QPushButton(self.verticalLayoutWidget)
@@ -99,6 +100,5 @@ class Ui_Dialog(object):
         self.label_5.setText(_translate("Dialog", "Cadastre layer:", None))
         self.label_6.setText(_translate("Dialog", "Cadastre terrains layer:", None))
         self.label_3.setText(_translate("Dialog", "Save layer:", None))
-        self.layerName.setText(_translate("Dialog", "Spatial_join", None))
         self.locationButton.setText(_translate("Dialog", "Location", None))
 

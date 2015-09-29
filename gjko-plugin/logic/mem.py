@@ -13,11 +13,11 @@ def merge(feature, features_input):
     count = 0
     features_output = [ feature ]
     geom = QgsGeometry(feature.geometry())
+    #geom = QgsGeometry.fromPolygon(feature.geometry())
     while True:
-        count += 1
         breakloop = True
-        for f in features:
-            if f in features_out:
+        for f in features_input:
+            if f in features_output:
                 continue
             #if geom.equals(g): 
             #    continue
@@ -27,20 +27,19 @@ def merge(feature, features_input):
             #    continue
             g = f.geometry()
             if geom.within(g):
+                print("within ...")
                 geom = QgsGeometry(g)
-                features_out.append(f)
+                features_output.append(f)
                 breakloop = False
                 break
             if not geom.disjoint(g) or geom.touches(g):
+                print("disjoint")
                 geom = QgsGeometry(geom.combine(g))
-                features_out.append(f)
+                features_output.append(f)
                 breakloop = False
                 break
         if breakloop:
             break
-        if count >= 10000:
-            pyqtRemoveInputHook()
-            pdb.set_trace()
     return (geom, features_output)
 
 def update_base_attributes(feature, geometry, features_set):
@@ -56,33 +55,39 @@ def update_base_attributes(feature, geometry, features_set):
         feature[FIELD_DISP_SURF] += f[FIELD_DISPERSING_SURFACE] # TODO: rename to one field name not two variation of the same
 
 def get_intersection(g1, g2):
+    #if len(p1) == 0 or len(p2) == 0:
+    #    pyqtRemoveInputHook()
+    #    pdb.set_trace()
+
     result = []
-    r1 = QgsGeometry.fromPolyline(g1.asPolygon()[0])
-    r2 = QgsGeometry.fromPolyline(g2.asPolygon()[0])
-    if not r1.equals(r2) and r1.intersects(r2):
-        i = r1.intersection(r2)
-        result.append(QgsGeometry(i))
+    p1 = g1.asPolygon()
+    p2 = g2.asPolygon()
+    if len(p1) > 0 and len(p2) > 0:
+        r1 = QgsGeometry.fromPolyline(p1[0])
+        r2 = QgsGeometry.fromPolyline(p2[0])
+        if not r1.equals(r2) and r1.intersects(r2):
+            i = r1.intersection(r2)
+            result.append(QgsGeometry(i))
     return result
   
-def dispersing_surface(index, feature, features):
-    fg = feature.geometry()
-    ids = index.intersects(fg.boundingBox())
+def disperding_surface(index, geometry, features, h):
+    ids = index.intersects(geometry.boundingBox())
     touch = 0
     perimeter_adjacent = 0
     for i in ids:
         f = features[i]
         g = f.geometry()
-        if (f != feature and not feature.geometry().disjoint(f.geometry())):
-            intersection_set = get_intersection(g, fg)
+        if not g.equals(geometry) and not geometry.disjoint(g):
+            intersection_set = get_intersection(g, geometry)
             h = f[FIELD_VOLUME_HEIGHT]
-            h2 = feature[FIELD_HEIGHT]
+            h2 = h
             if h2 <= h:
                 h = h2
             for intersection in intersection_set:
                 perimeter_adjacent += intersection.length()
                 touch += intersection.length() * h
-    feature[FIELD_PERIMETER_ADJACENT] = perimeter_adjacent
-    feature[FIELD_DISPERSING_SURFACE] = feature[FIELD_AREA] * 2 + (feature[FIELD_PERIMETER] * feature[FIELD_HEIGHT]) - touch
+    #feature[FIELD_PERIMETER_ADJACENT] = perimeter_adjacent
+    return geometry.area() * 2 + (geometry.length() * h) - touch
 
 """
 Compute compact ratio only on a simple volume without adiacent volumes. 

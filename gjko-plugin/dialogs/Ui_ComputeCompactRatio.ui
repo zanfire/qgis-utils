@@ -57,14 +57,14 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="layerName">
+     <widget class="QLineEdit" name="volumesLayerPath">
       <property name="text">
        <string/>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="locationButton_2">
+     <widget class="QPushButton" name="locationButton1">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -81,14 +81,14 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="saveFolder">
+     <widget class="QLineEdit" name="buildingLayerPath">
       <property name="enabled">
        <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="locationButton">
+     <widget class="QPushButton" name="locationButton2">
       <property name="enabled">
        <bool>true</bool>
       </property>

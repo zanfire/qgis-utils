@@ -2,6 +2,7 @@
 from PyQt4.QtCore import * 
 from PyQt4.QtGui import *
 from qgis.core import *
+from qgis.gui import *
 from ..util import pyqt_helper
 from ..resources import *
 import traceback
@@ -12,6 +13,7 @@ class Worker(QtCore.QObject):
     finished = QtCore.pyqtSignal(object)
     error = QtCore.pyqtSignal(Exception, basestring)
     progress = QtCore.pyqtSignal(float)
+    inerror = False
 
     def __init__(self, action):
         QtCore.QObject.__init__(self)
@@ -28,7 +30,7 @@ class Worker(QtCore.QObject):
             self.action.compute(self.progress)
             QgsMessageLog.logMessage("Terminated processing ...")
         except Exception, e:
-            QgsMessageLog.logMessage('Worker thread raised an exception:' + str(e), level=QgsMessageLog.CRITICAL)
+            self.inerror = True
             self.error.emit(e, traceback.format_exc())
         self.finished.emit(None)
 
@@ -105,11 +107,10 @@ class Action(object):
         #self.thead.deleteLater()
         # remove widget from message bar
         self.iface.messageBar().popWidget(self.message_bar)
-        
-        self.apply()
+        if not self.worker.inerror: 
+            self.apply()
 
-    def worker_error(self, e, exception_string):
-        QgsMessageLog.logMessage('Worker thread raised an exception:\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
-        
-
+    def worker_error(self, e, exception_string): 
+        QgsMessageLog.logMessage('Worker thread raised an exception:' + exception_string, level=QgsMessageLog.CRITICAL)
+        self.iface.messageBar().pushMessage('An error was occurred, expcetion:' + str(e), QgsMessageBar.CRITICAL)
 

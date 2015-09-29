@@ -18,7 +18,7 @@ class SpatialJoinDialog(QtGui.QDialog):
             self.ui.cadastreTerrainCombo.addItem(l.name())
 
     def save_location_dialog(self):
-        location = QtGui.QFileDialog.getSaveFileName(None, 'Shapefile file:', os.getenv('HOME'), 'Shp (*.shp);; All files (*)')
+        location = QtGui.QFileDialog.getSaveFileName(None, 'Shapefile file:', self.ui.layerName.text(), 'Shp (*.shp);; All files (*)')
         if len(location) > 0:
             self.ui.layerName.setText(location)
     
