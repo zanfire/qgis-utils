@@ -28,19 +28,36 @@
      <x>10</x>
      <y>10</y>
      <width>381</width>
-     <height>375</height>
+     <height>385</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Energy values layer:</string>
+       <string>Volumes layer:</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="energyCombo">
+     <widget class="QComboBox" name="volumesCombo">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>Building layer:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="buildingCombo">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -97,32 +114,6 @@
      <widget class="QPushButton" name="istatOpenButton">
       <property name="text">
        <string>Select file</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="simplifyLayerCheckBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Create simplified layer</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="intersectionLayerCheckBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Create interesection layer</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
       </property>
      </widget>
     </item>

@@ -26,6 +26,22 @@ class ComputeCompactRatioAction(Action):
         self.volumes_layer = layer_helper.create_layer(self.dlg.volumes_layer_name(), LAYER_VOLUMES_FIELDS, self.input_layer, 'Polygon', False)
         self.building_layer = layer_helper.create_layer(self.dlg.building_layer_name(), LAYER_BUILDING_FIELD, self.input_layer, 'Polygon', False)
 
+    def compute(self, progress):
+        """
+        Creating final layer trough an intermediate layer.
+        """
+        t1 = time.clock()
+        features = self.input_layer.getFeatures()
+        features_id = layer_helper.load_features(self.input_layer)
+        index = layer_helper.build_spatialindex(features_id.values())
+        map_cadastre_building = {}
+        self.volumes_features = self.compute_volumes(progress, features, index, features_id, map_cadastre_building)
+        t2 = time.clock()
+        self.building_features = self.compute_building(progress, map_cadastre_building)
+        if self.dlg.create_intersection_layer_check():
+            self.create_intersection_layer(self.layer, index, features_id)
+        t3 = time.clock() 
+        print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
 
     def compute_volumes(self, progress, features, index, features_id, map_cadastre_building):
         result = []
@@ -41,21 +57,22 @@ class ComputeCompactRatioAction(Action):
             feature.setGeometry(QgsGeometry(g))
             #feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
             #feature[FIELD_ID_CADASTRE] = f[FIELD_CODCAT] 
+            feature[FIELD_USE] = f[FIELD_CADASTRE_USAGE] 
             feature[FIELD_HEIGHT] = f[FIELD_VOLUME_HEIGHT] 
             feature[FIELD_AREA_GROSS] = g.area()
             feature[FIELD_VOL_GROSS] = feature[FIELD_HEIGHT] * feature[FIELD_AREA_GROSS]
-            feature[FIELD_WALL_SURF] = g.length()
-            feature[FIELD_DISP_SURF] = mem.disperding_surface(index, g, features_id, feature[FIELD_HEIGHT]) 
+            feature[FIELD_WALL_SURF] = mem.compute_external_wall_surface(index, g, features_id, feature[FIELD_HEIGHT])
+            feature[FIELD_DISP_SURF] = feature[FIELD_AREA_GROSS] * 2 + feature[FIELD_WALL_SURF]
             #feature[FIELD_AREA_R] =
             #feature[FIELD_AREA_NET] =
             #feature[FIELD_VOL_R] =
             #feature[FIELD_VOL_NET] =
-            #feature[FIELD_LEVEL_H] =
+            #feature[FIELD_H_LEVEL] =
             #feature[FIELD_N_LEVEL] =
             #feature[FIELD_FLOOR_AREA] =
             
-            #feature[FIELD_TYPE_USAGE] = f[FIELD_CADASTRE_USAGE]
             result.append(feature)
+            # Create map cadastre to features for next steps.
             id_cadastre = f[FIELD_CODCAT]
             if not id_cadastre in map_cadastre_building.keys():
                 map_cadastre_building[id_cadastre] = [ feature ]
@@ -64,26 +81,6 @@ class ComputeCompactRatioAction(Action):
 
         return result
 
-    def compute(self, progress):
-        """
-        Creating final layer trough an intermediate layer.
-        """
-        t1 = time.clock()
-
-        features = self.input_layer.getFeatures()
-        features_id = layer_helper.load_features(self.input_layer)
-        index = layer_helper.build_spatialindex(features_id.values())
-        map_cadastre_building = {}
-        self.volumes_features = self.compute_volumes(progress, features, index, features_id, map_cadastre_building)
-
-        t2 = time.clock()
-        
-        self.building_features = self.compute_building(progress, map_cadastre_building)
-
-        #if self.dlg.create_intersection_layer_check():
-        #    self.create_intersection_layer(self.layer, index, features_id)
-        t3 = time.clock() 
-        print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
         
     
     def compute_building(self, progress, map_cadastre_building):
@@ -106,30 +103,34 @@ class ComputeCompactRatioAction(Action):
                         insert = False
                         break
                 if insert:
-                    features_temp.append(QgsFeature(self.building_layer.pendingFields()))
-                    features_temp[idx].setGeometry(geom)
+                    feature = QgsFeature(self.building_layer.pendingFields())
+                    features_temp.append(feature);
+                    feature.setGeometry(geom)
                     id_mem = cadastre + '_' + str(idx)
-                    features_temp[idx][FIELD_ID_CADASTRE] = cadastre
-                    features_temp[idx][FIELD_ID_MEM] = id_mem
+                    feature[FIELD_ID_CADASTRE] = cadastre
+                    feature[FIELD_ID_MEM] = id_mem
+                    feature[FIELD_USE] = f[FIELD_USE]
                     #features_temp[idx][FIELD_USE] = f[FIELD_TYPE_USAGE]
                     #features_temp[idx][FIELD_CODCAT] = f[FIELD_CATID]
                     #features_temp[idx][FIELD_ID_EPC] = ''
+                    
+                    feature[FIELD_FOOT_AREA] = 0
+                    feature[FIELD_FLOOR_AREA] = 0
+                    feature[FIELD_VOL_GROSS] = 0
+                    feature[FIELD_DISP_SURF] = 0
+                    feature[FIELD_WALL_SURF] = 0
+                    total_disp = 0
                     for elem in feature_set:
                         elem[FIELD_ID_MEM] = id_mem
+                        feature[FIELD_FOOT_AREA] += f[FIELD_AREA_GROSS]
+                        #feature[FIELD_FLOOR_AREA] += f[FIELD_AREA_NET] 
+                        feature[FIELD_VOL_GROSS] += f[FIELD_VOL_GROSS]
+                        feature[FIELD_DISP_SURF] += f[FIELD_DISP_SURF]
+                        feature[FIELD_WALL_SURF] += f[FIELD_WALL_SURF]
+                    feature[FIELD_COMPACT_R] = feature[FIELD_DISP_SURF] / feature[FIELD_VOL_GROSS]
                     idx += 1
             # We have created the final set.
             result.extend(features_temp)
-#    for feature in sfeatures:
-#        total_vol = 0
-#        total_disp = 0
-#        ids = index.intersects(feature.geometry().boundingBox())
-#        for i in ids:
-#            f = features[i]
-#            if not feature.geometry().disjoint(f.geometry()):
-#                total_vol += f[FIELD_HEIGHT] * f[FIELD_AREA]
-#                total_disp += f[FIELD_DISPERSING_SURFACE]
-#        mcr = total_disp / total_vol
-#        feature[FIELD_COMPACT_R] = mcr
         return result
 
     def create_intersection_layer(self, l, index, features):

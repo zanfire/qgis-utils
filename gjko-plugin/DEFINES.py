@@ -19,14 +19,7 @@ FIELD_AREA                      = 'AREA'
 FIELD_PERIMETER                 = 'PERIMETER'
 FIELD_HEIGHT                    = 'HEIGHT'
 FIELD_PERIMETER_ADJACENT        = 'PERIM_ABJ'
-FIELD_DISPERSING_SURFACE        = 'DISP_SURF'
-FIELD_COMPACT_RATIO             = 'COMP_RATIO'
-FIELD_EPOCH                     = 'EPOCH'
-FIELD_CLASS                     = 'CLASS'
-#FIELD_CODCAT                    = 'COD_CAD'
 FIELD_CODISTAT                  = 'COD_ISTAT'
-FIELD_EPCs_AVAILABLE            = 'EPCS_AVAI'
-FIELD_TYPE_USAGE                = 'TYPE_USAGE'
 
 
 # Final tables
@@ -39,9 +32,9 @@ FIELD_TYPOLOGY    = 'TYPOLOGY' #8   identifier of compactness-age typology (serv
 FIELD_ID_ISTAT    = 'ID_ISTAT' #8   identifier of ISTAT zone
 FIELD_ID_OMI      = 'ID_OMI' #6   identifier of OMI zone    
 # = '' Energy fields   #    descrizione da dove note
-FIELD_AREA        = 'AREA' #4   footprint building area area   
+FIELD_FOOT_AREA        = 'FOOT_AREA' #4   footprint building area area   
 FIELD_FLOOR_AREA  = 'FLOOR_AREA' #10      (sommatoria un-vol_MEM)  
-FIELD_VOLUME      = 'VOLUME' #6       (sommatoria un-vol_MEM)  
+FIELD_VOL_GROSS   = 'VOL_GROSS' #6       (sommatoria un-vol_MEM)  
 FIELD_DISP_SURF   = 'DISP_SURF' #9   dispersing surface  (sommatoria un-vol_MEM)  
 FIELD_COMPACT_R   = 'COMPACT_R' #9   S/V (considera tutte le un-vol_MEM) 
 FIELD_WALL_SURF   = 'WALL_SURF' #9   walls surface   (sommatoria un-vol_MEM)  
@@ -64,8 +57,6 @@ FIELD_E_H_DHW     = 'E_H_DHW' #7   overall efficiency of the heating & dhw syste
 FIELD_SUP_FV      = 'SUP_FV' #6   surface of photovoltaic panels  ID_EPC  if not available use 0.
 FIELD_SUP_ST      = 'SUP_ST' #6   surface of solar thermal panels ID_EPC  if not avialable use 0. 
 
-
-
 FIELD_AREA_GROSS = 'AREA_GROSS'
 FIELD_VOL_GROSS = 'VOL_GROSS'
 FIELD_WALL_SURF = 'WALL_SURF'
@@ -74,7 +65,7 @@ FIELD_AREA_R = 'AREA_R'
 FIELD_AREA_NET = 'AREA_NET'
 FIELD_VOL_R = 'VOL_R'
 FIELD_VOL_NET = 'VOL_NET'
-FIELD_LEVEL_H = 'LEVEL_H'
+FIELD_H_LEVEL = 'H_LEVEL'
 FIELD_N_LEVEL = 'N_LEVEL'
 FIELD_FLOOR_AREA = 'FLOOR_AREA'
 
@@ -86,9 +77,10 @@ LAYER_BUILDING_FIELD = [
         QgsField(FIELD_TYPOLOGY, QVariant.String),
         QgsField(FIELD_ID_ISTAT, QVariant.String),
         QgsField(FIELD_ID_OMI, QVariant.String),
-        QgsField(FIELD_AREA, QVariant.Double),
+        QgsField(FIELD_FOOT_AREA, QVariant.Double),
         QgsField(FIELD_FLOOR_AREA, QVariant.Double),
-        QgsField(FIELD_VOLUME, QVariant.Double),
+        QgsField(FIELD_VOL_GROSS, QVariant.Double),
+        QgsField(FIELD_VOL_NET, QVariant.Double),
         QgsField(FIELD_DISP_SURF, QVariant.Double),
         QgsField(FIELD_COMPACT_R, QVariant.Double),
         QgsField(FIELD_WALL_SURF, QVariant.Double),
@@ -115,7 +107,7 @@ LAYER_BUILDING_FIELD = [
 LAYER_VOLUMES_FIELDS = [
         QgsField(FIELD_ID_CADASTRE, QVariant.String),
         #un-vol_MEM  identifier of the MEM volumetric unit
-        #USE residential (E1) or non-residential (En1) building
+        QgsField(FIELD_USE, QVariant.String), # residential (E1) or non-residential (En1) building
         #ID_EPC  identifier of EPCs data
         #TYPOLOGY    identifier of compactness-age typology
         #ID_ISTAT    identifier of ISTAT zone
@@ -131,7 +123,7 @@ LAYER_VOLUMES_FIELDS = [
         QgsField(FIELD_AREA_NET, QVariant.Double),    # net area
         QgsField(FIELD_VOL_R, QVariant.Double),   # net volume to gross volume ratio
         QgsField(FIELD_VOL_NET, QVariant.Double), # net volume
-        QgsField(FIELD_LEVEL_H, QVariant.Double), # # average level's height
-        QgsField(FIELD_N_LEVEL, QVariant.Double), # # number of levels
+        QgsField(FIELD_H_LEVEL, QVariant.Double), # # average level's height
+        QgsField(FIELD_N_LEVEL, QVariant.Int), # # number of levels
         QgsField(FIELD_FLOOR_AREA, QVariant.Double)  # #net floor area
         ]

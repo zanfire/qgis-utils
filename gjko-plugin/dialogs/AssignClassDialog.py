@@ -3,6 +3,11 @@ from qgis.utils import iface
 from Ui_AssignClass import Ui_Dialog
 import os
 
+def helper_selectcombo(combo, text):
+    index = combo.findText(text, QtCore.Qt.MatchContains)
+    if index >= 0:
+        combo.setCurrentIndex(index)
+
 class AssignClassDialog(QtGui.QDialog):
 
     def __init__(self):
@@ -11,17 +16,25 @@ class AssignClassDialog(QtGui.QDialog):
         self.ui.setupUi(self)
         layers = iface.legendInterface().layers()
         for l in layers:
-            self.ui.energyCombo.addItem(l.name())
-            self.ui.istatCombo.addItem(l.name())
+            name = l.name()
+            self.ui.volumesCombo.addItem(name)
+            self.ui.buildingCombo.addItem(name)
+            self.ui.istatCombo.addItem(name)
+        # Guess data for convenience.
+        helper_selectcombo(self.ui.volumesCombo, "volume")
+        helper_selectcombo(self.ui.buildingCombo, "build")
+        helper_selectcombo(self.ui.istatCombo, "istat")
+
         QtCore.QObject.connect(self.ui.epcOpenButton, QtCore.SIGNAL('clicked()'), self.epc_open_file)
         QtCore.QObject.connect(self.ui.istatOpenButton, QtCore.SIGNAL('clicked()'), self.istat_open_file)
 
-    def energy_layer_name(self):
-       return str(self.ui.energyCombo.currentText())
 
-    def certificate_layer_name(self):
-        return str(self.ui.certificateCombo.currentText())
+    def volumes_layer_name(self):
+       return str(self.ui.volumesCombo.currentText())
 
+    def building_layer_name(self):
+       return str(self.ui.buildingCombo.currentText())
+   
     def epcs_csv_file(self):
         return self.ui.epcEdit.text()
 

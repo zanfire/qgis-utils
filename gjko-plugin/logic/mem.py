@@ -70,24 +70,20 @@ def get_intersection(g1, g2):
             result.append(QgsGeometry(i))
     return result
   
-def disperding_surface(index, geometry, features, h):
+def compute_external_wall_surface(index, geometry, features, height):
     ids = index.intersects(geometry.boundingBox())
-    touch = 0
-    perimeter_adjacent = 0
+    common_part = 0
     for i in ids:
-        f = features[i]
-        g = f.geometry()
+        g = features[i].geometry()
         if not g.equals(geometry) and not geometry.disjoint(g):
             intersection_set = get_intersection(g, geometry)
-            h = f[FIELD_VOLUME_HEIGHT]
-            h2 = h
+            h = features[i][FIELD_VOLUME_HEIGHT]
+            h2 = height
             if h2 <= h:
                 h = h2
             for intersection in intersection_set:
-                perimeter_adjacent += intersection.length()
-                touch += intersection.length() * h
-    #feature[FIELD_PERIMETER_ADJACENT] = perimeter_adjacent
-    return geometry.area() * 2 + (geometry.length() * h) - touch
+                common_part += intersection.length() * h
+    return (geometry.length() * height) - common_part
 
 """
 Compute compact ratio only on a simple volume without adiacent volumes. 
