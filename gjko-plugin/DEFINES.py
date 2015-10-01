@@ -54,8 +54,8 @@ FIELD_EPT         = 'EPT' #3   Primary Energy Total    ID_EPC o TYPOLOGY
 FIELD_E_HEAT      = 'E_HEAT' #6   overall efficiency of the heating system    ID_EPC o TYPOLOGY   
 FIELD_E_DHW       = 'E_DHW' #5   overall efficiency of the dhw system    ID_EPC o TYPOLOGY   
 FIELD_E_H_DHW     = 'E_H_DHW' #7   overall efficiency of the heating & dhw system  ID_EPC o TYPOLOGY   
-FIELD_SUP_FV      = 'SUP_FV' #6   surface of photovoltaic panels  ID_EPC  if not available use 0.
-FIELD_SUP_ST      = 'SUP_ST' #6   surface of solar thermal panels ID_EPC  if not avialable use 0. 
+FIELD_PV_AREA      = 'PV_AREA' #6   surface of photovoltaic panels  ID_EPC  if not available use 0.
+FIELD_ST_AREA      = 'ST_AREA' #6   surface of solar thermal panels ID_EPC  if not avialable use 0. 
 
 FIELD_AREA_GROSS = 'AREA_GROSS'
 FIELD_VOL_GROSS = 'VOL_GROSS'
@@ -100,8 +100,8 @@ LAYER_BUILDING_FIELD = [
         QgsField(FIELD_E_HEAT, QVariant.Double),
         QgsField(FIELD_E_DHW, QVariant.Double),
         QgsField(FIELD_E_H_DHW, QVariant.Double),
-        QgsField(FIELD_SUP_FV, QVariant.Double),
-        QgsField(FIELD_SUP_ST, QVariant.Double)
+        QgsField(FIELD_PV_AREA, QVariant.Double),
+        QgsField(FIELD_ST_AREA, QVariant.Double)
         ]
 
 LAYER_VOLUMES_FIELDS = [

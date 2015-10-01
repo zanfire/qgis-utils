@@ -56,7 +56,7 @@ class ComputeCompactRatioAction(Action):
             print(type(g))
             feature.setGeometry(QgsGeometry(g))
             #feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
-            #feature[FIELD_ID_CADASTRE] = f[FIELD_CODCAT] 
+            feature[FIELD_ID_CADASTRE] = f[FIELD_CODCAT] 
             feature[FIELD_USE] = f[FIELD_CADASTRE_USAGE] 
             feature[FIELD_HEIGHT] = f[FIELD_VOLUME_HEIGHT] 
             feature[FIELD_AREA_GROSS] = g.area()

@@ -19,9 +19,9 @@ class BaseReader:
                 for row in result:
                     if first:
                         self.handle_header(row)
+                        first = False
                     else:
                         self.handle_row(row)
-                    first = False
                 self.filename = filename
                 self.valid = True
         except AttributeError as e:
@@ -41,8 +41,20 @@ class BaseReader:
             return None
 
     def get_element(self, code, header):
-        idx = self.header.index(header)
-        return self.table[code][idx]
+        if not self.valid:
+            return None
+        try:
+            idx = -1
+            cur = 0
+            lowheader = header.lower()
+            for h in self.header:
+                if lowheader == h.lower():
+                    idx = cur
+                    break
+                cur += 1
+            return self.table[code][idx]
+        except:
+            return None
 
     def handle_header(self, row):
         return False
@@ -57,12 +69,12 @@ class ISTAT(BaseReader):
         self.load(filename)
 
     def handle_header(self, row):
-        self.header.extend(row[:2])
+        self.header = row
         return True
 
     def handle_row(self, row):
         if len(row) >= 2:
-            self.table[str(row[0])] = str(row[1])
+            self.table[str(row[0])] = row
             return True
         else:
             return False
@@ -81,12 +93,12 @@ class EPCs(BaseReader):
         self.load(filename)
 
     def handle_header(self, row):
-        self.header.extend(row)
+        self.header = row
         return True
 
     def handle_row(self, row):
         if len(row) >= 2:
-            self.table[str(row[0])] = row[1:]
+            self.table[str(row[0])] = row
             return True
         else:
             return False

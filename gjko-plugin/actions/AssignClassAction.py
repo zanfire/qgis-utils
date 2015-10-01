@@ -25,15 +25,18 @@ class AssignClassAction(Action):
         self.epcs_csv = reader_csv.EPCs(self.dlg.epcs_csv_file())
 
     def compute(self, progress):
+        self.compute_building(progress)
+        self.compute_volumes(progress)
+
+    def compute_building(self, progress):
         istat_features = layer_helper.load_features(self.istat_layer)
         building_features = layer_helper.load_features(self.building_layer)
         index = layer_helper.build_spatialindex(istat_features.values())
 
         count = 0
         count_max = len(building_features.values())
-        self.building_layer.startEditing()
         for f in building_features.values():
-            progress.emit(int(count * (100.0 / count_max)))  
+            progress.emit(int(count * (50.0 / count_max)))  
             count += 1
             ids = index.intersects(f.geometry().boundingBox())
             # guess the ISTAT code that have biggest area in this feature. 
@@ -46,20 +49,64 @@ class AssignClassAction(Action):
                     area_max = common.area()
             if id_max > -1:
                 codistat = str(int(istat_features[i]['SEZ2011']))
-                epoch = self.istat_csv.get(codistat)
-                if epoch == None:
-                    continue
                 f[FIELD_ID_ISTAT] = codistat
+                f[FIELD_AGE] = self.istat_csv.get_element(codistat, 'SEZ_period')
+                #QgsMessageLog.logMessage("Found age: " + str(f[FIELD_AGE]))
+                if f[FIELD_AGE] == None:
+                    QgsMessageLog.logMessage("Age not available, skipping ...")
+                    continue
                 #f[FIELD_EPOCH] = epoch
-                #f[FIELD_CLASS] = code_generator.get_code(f[FIELD_TYPE_USAGE], f[FIELD_EPOCH], f[FIELD_COMPACT_RATIO])
-                #f[FIELD_CODISTAT] = codistat
-                #epcs = self.epcs_csv.get(f[FIELD_TYPE_USAGE] + '.' + f[FIELD_CODCAT])
-                #epcs = self.epcs_csv.get(reader_csv.codcat_to_epcs(f[FIELD_TYPE_USAGE], f[FIELD_CODCAT]))
-                #if epcs != None:
-                    # Fill data.
-                #    f[FIELD_EPCs_AVAILABLE] = 1
+                f[FIELD_TYPOLOGY] = code_generator.get_code(f[FIELD_USE], f[FIELD_AGE], f[FIELD_COMPACT_R])
+                id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
+                epcs = self.epcs_csv.get(id_epc)
+                if epcs != None:
+                    f[FIELD_ID_EPC] = id_epc
+                    f[FIELD_WIND_R] = self.epcs_csv.get_element(id_epc, 'wind_r')
+                    f[FIELD_WIND_SURF] = self.epcs_csv.get_element(id_epc, 'wind_surf')
+                    f[FIELD_U_ENV] = self.epcs_csv.get_element(id_epc, 'u_env')
+                    f[FIELD_U_ROOF] = self.epcs_csv.get_element(id_epc, 'u_roof')
+                    f[FIELD_U_GROUND] = self.epcs_csv.get_element(id_epc, 'u_ground')
+                    f[FIELD_U_WIND] = self.epcs_csv.get_element(id_epc, 'u_wind')
+                    f[FIELD_EPH] = self.epcs_csv.get_element(id_epc, 'eph')
+                    f[FIELD_ETH] = self.epcs_csv.get_element(id_epc, 'eth')
+                    f[FIELD_ETC] = self.epcs_csv.get_element(id_epc, 'etc')
+                    f[FIELD_EFER] = self.epcs_csv.get_element(id_epc, 'efer')
+                    f[FIELD_EPW] = self.epcs_csv.get_element(id_epc, 'epw')
+                    f[FIELD_EPT] = self.epcs_csv.get_element(id_epc, 'ept')
+                    f[FIELD_E_HEAT] = self.epcs_csv.get_element(id_epc, 'e_heat')
+                    f[FIELD_E_DHW] = self.epcs_csv.get_element(id_epc, 'e_dhw')
+                    f[FIELD_E_H_DHW] = self.epcs_csv.get_element(id_epc, 'e_h_dhw')
+                    f[FIELD_PV_AREA] = self.epcs_csv.get_element(id_epc, 'fv_area')
+                    f[FIELD_ST_AREA] = self.epcs_csv.get_element(id_epc, 'st_area')
+
+                #self.building_layer.startEditing()
                 self.building_layer.updateFeature(f)
-        self.building_layer.commitChanges()
+                #self.building_layer.commitChanges()
+
+    def compute_volumes(self, progress):
+        volumes_features = layer_helper.load_features(self.volumes_layer)
+
+        count = 0
+        count_max = len(volumes_features.values())
+        for f in volumes_features.values():
+            progress.emit(50 + int(count * (500.0 / count_max)))  
+            count += 1
+            id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
+            epcs = self.epcs_csv.get(id_epc)
+            if epcs != None:
+                f[FIELD_AREA_R] = self.epcs_csv.get_element(id_epc, 'area_r')
+                f[FIELD_VOL_R] = self.epcs_csv.get_element(id_epc, 'vol_r')
+                f[FIELD_H_LEVEL] = self.epcs_csv.get_element(id_epc, 'h_level')
+                f[FIELD_AREA_NET] = float(f[FIELD_AREA_GROSS]) * float(f[FIELD_AREA_R])
+                f[FIELD_VOL_NET] = float(f[FIELD_VOL_GROSS]) * float(f[FIELD_VOL_R])
+                f[FIELD_N_LEVEL] = 1.0 #int(float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL]))
+                if f[FIELD_N_LEVEL] < 1.0:
+                    f[FIELD_N_LEVEL] = 1.0
+                f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
+            #self.building_layer.startEditing()
+            self.building_layer.updateFeature(f)
+            #self.building_layer.commitChanges()
+
 
     def apply(self):
         return None
