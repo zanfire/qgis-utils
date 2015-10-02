@@ -2,6 +2,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
+import math
 
 from Action import Action
 from ..dialogs import AssignClassDialog
@@ -25,8 +26,8 @@ class AssignClassAction(Action):
         self.epcs_csv = reader_csv.EPCs(self.dlg.epcs_csv_file())
 
     def compute(self, progress):
-        self.compute_building(progress)
         self.compute_volumes(progress)
+        self.compute_building(progress)
 
     def compute_building(self, progress):
         istat_features = layer_helper.load_features(self.istat_layer)
@@ -37,7 +38,7 @@ class AssignClassAction(Action):
         count = 0
         count_max = len(building_features.values())
         for f in building_features.values():
-            progress.emit(int(count * (50.0 / count_max)))  
+            progress.emit(50 + int(count * (50.0 / count_max)))  
             count += 1
             ids = index.intersects(f.geometry().boundingBox())
             # guess the ISTAT code that have biggest area in this feature. 
@@ -88,7 +89,7 @@ class AssignClassAction(Action):
         count = 0
         count_max = len(volumes_features.values())
         for f in volumes_features.values():
-            progress.emit(50 + int(count * (50.0 / count_max)))  
+            progress.emit(int(count * (50.0 / count_max)))  
             count += 1
             id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
             epcs = self.epcs_csv.get(id_epc)
@@ -100,9 +101,14 @@ class AssignClassAction(Action):
                 f[FIELD_H_LEVEL] = self.epcs_csv.get_element(id_epc, 'h_level')
                 f[FIELD_AREA_NET] = float(f[FIELD_AREA_GROSS]) * float(f[FIELD_AREA_R])
                 f[FIELD_VOL_NET] = float(f[FIELD_VOL_GROSS]) * float(f[FIELD_VOL_R])
-                f[FIELD_N_LEVEL] = int(float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL]))
-                if f[FIELD_N_LEVEL] < 1.0:
-                    f[FIELD_N_LEVEL] = 1.0
+                n_level = float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL])
+                if math.modf(n_level) > 0.8:
+                    n_level = math.ceil(n_level)
+                else:
+                    n_level = math.floor(n_level)
+                if n_level < 1:
+                    n_level = 1
+                f[FIELD_N_LEVEL] = n_level
                 f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
 
                 self.updated_volumes_features.append(f)
