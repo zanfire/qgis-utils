@@ -40,9 +40,9 @@ class BaseReader:
         except:
             return None
 
-    def get_element(self, code, header):
+    def get_element(self, code, header, default = None):
         if not self.valid:
-            return None
+            return default
         try:
             idx = -1
             cur = 0
@@ -54,7 +54,7 @@ class BaseReader:
                 cur += 1
             return self.table[code][idx]
         except:
-            return None
+            return default
 
     def handle_header(self, row):
         return False

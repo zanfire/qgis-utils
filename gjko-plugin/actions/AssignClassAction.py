@@ -63,6 +63,9 @@ class AssignClassAction(Action):
                 epcs = self.epcs_csv.get(id_epc)
                 if epcs != None:
                     f[FIELD_ID_EPC] = id_epc
+                    epc_age = self.epcs_csv.get_element(id_epc, 'age')
+                    if epc_age != None and epc_age != '':
+                        f[FIELD_AGE] = epc_age
                     f[FIELD_WIND_R] = self.epcs_csv.get_element(id_epc, 'wind_r')
                     f[FIELD_WIND_SURF] = self.epcs_csv.get_element(id_epc, 'wind_surf')
                     f[FIELD_U_ENV] = self.epcs_csv.get_element(id_epc, 'u_env')
@@ -78,13 +81,21 @@ class AssignClassAction(Action):
                     f[FIELD_E_HEAT] = self.epcs_csv.get_element(id_epc, 'e_heat')
                     f[FIELD_E_DHW] = self.epcs_csv.get_element(id_epc, 'e_dhw')
                     f[FIELD_E_H_DHW] = self.epcs_csv.get_element(id_epc, 'e_h_dhw')
-                    f[FIELD_PV_AREA] = self.epcs_csv.get_element(id_epc, 'fv_area')
-                    f[FIELD_ST_AREA] = self.epcs_csv.get_element(id_epc, 'st_area')
+                    # TODO: Set to zero if missing
+                    f[FIELD_PV_AREA] = self.epcs_csv.get_element(id_epc, 'fv_area', 0)
+                    f[FIELD_ST_AREA] = self.epcs_csv.get_element(id_epc, 'st_area', 0)
+                    
+                    f[FIELD_FLOOR_AREA] = 0
+                    f[FIELD_VOL_NET] = 0
+                    for vol in self.epc_to_volumes[id_epc]:
+                        f[FIELD_FLOOR_AREA] += vol[FIELD_FLOOR_AREA]
+                        f[FIELD_VOL_NET] += vol[FIELD_VOL_NET]
                 self.updated_building_features.append(f)
 
     def compute_volumes(self, progress):
         volumes_features = layer_helper.load_features(self.volumes_layer)
 
+        self.epc_to_volumes = {}
         self.updated_volumes_features = []
         count = 0
         count_max = len(volumes_features.values())
@@ -112,6 +123,10 @@ class AssignClassAction(Action):
                 f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
 
                 self.updated_volumes_features.append(f)
+                if id_epc in self.epc_to_volumes.keys():
+                    self.epc_to_volumes[id_epc].append(f)
+                else:
+                    self.epc_to_volumes[id_epc] = [ f ] 
 
     def apply(self):
         self.building_layer.startEditing()
