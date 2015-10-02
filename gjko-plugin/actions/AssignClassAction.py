@@ -33,6 +33,7 @@ class AssignClassAction(Action):
         building_features = layer_helper.load_features(self.building_layer)
         index = layer_helper.build_spatialindex(istat_features.values())
 
+        self.updated_building_features = []
         count = 0
         count_max = len(building_features.values())
         for f in building_features.values():
@@ -78,35 +79,42 @@ class AssignClassAction(Action):
                     f[FIELD_E_H_DHW] = self.epcs_csv.get_element(id_epc, 'e_h_dhw')
                     f[FIELD_PV_AREA] = self.epcs_csv.get_element(id_epc, 'fv_area')
                     f[FIELD_ST_AREA] = self.epcs_csv.get_element(id_epc, 'st_area')
-
-                #self.building_layer.startEditing()
-                self.building_layer.updateFeature(f)
-                #self.building_layer.commitChanges()
+                self.updated_building_features.append(f)
 
     def compute_volumes(self, progress):
         volumes_features = layer_helper.load_features(self.volumes_layer)
 
+        self.updated_volumes_features = []
         count = 0
         count_max = len(volumes_features.values())
         for f in volumes_features.values():
-            progress.emit(50 + int(count * (500.0 / count_max)))  
+            progress.emit(50 + int(count * (50.0 / count_max)))  
             count += 1
             id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
             epcs = self.epcs_csv.get(id_epc)
             if epcs != None:
+                QgsMessageLog.logMessage("Found id_epc: " + id_epc)
+                f[FIELD_ID_EPC] = id_epc
                 f[FIELD_AREA_R] = self.epcs_csv.get_element(id_epc, 'area_r')
                 f[FIELD_VOL_R] = self.epcs_csv.get_element(id_epc, 'vol_r')
                 f[FIELD_H_LEVEL] = self.epcs_csv.get_element(id_epc, 'h_level')
                 f[FIELD_AREA_NET] = float(f[FIELD_AREA_GROSS]) * float(f[FIELD_AREA_R])
                 f[FIELD_VOL_NET] = float(f[FIELD_VOL_GROSS]) * float(f[FIELD_VOL_R])
-                f[FIELD_N_LEVEL] = 1.0 #int(float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL]))
+                f[FIELD_N_LEVEL] = int(float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL]))
                 if f[FIELD_N_LEVEL] < 1.0:
                     f[FIELD_N_LEVEL] = 1.0
                 f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
-            #self.building_layer.startEditing()
-            self.building_layer.updateFeature(f)
-            #self.building_layer.commitChanges()
 
+                self.updated_volumes_features.append(f)
 
     def apply(self):
+        self.building_layer.startEditing()
+        for f in self.updated_building_features:
+            self.building_layer.updateFeature(f)
+        self.building_layer.commitChanges()
+        self.volumes_layer.startEditing()
+        for f in self.updated_volumes_features:
+            self.volumes_layer.updateFeature(f)
+        self.volumes_layer.commitChanges()
+        
         return None
