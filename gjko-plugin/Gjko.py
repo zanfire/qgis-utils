@@ -20,6 +20,7 @@ class Gjko:
         self.actions.append(ComputeCompactRatioAction(iface, menuName))
         self.actions.append(AssignClassAction(iface, menuName))
         self.actions.append(ManualCheckAction(iface, menuName))
+        self.actions.append(SpatialJoinMaxAreaAction(iface, menuName))
 
     def initGui(self): 
         #menuBar = self.iface.mainWindow().menuBar()

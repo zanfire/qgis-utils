@@ -6,3 +6,4 @@ from ManualCheckAction import ManualCheckAction
 from CreateLayerAction import CreateLayerAction
 from ComputeCompactRatioAction import ComputeCompactRatioAction
 from SpatialJoinAction import SpatialJoinAction
+from SpatialJoinMaxAreaAction import SpatialJoinMaxAreaAction
