@@ -52,7 +52,7 @@ class SpatialJoinMaxAreaAction(Action):
             ids = index.intersects(f.geometry().boundingBox())
             add = False
             if len(ids) == 0:
-                add = False
+                add = True
             elif len(ids) == 1:
                 add = True
                 feature[self.max_area_field] = features2[ids[0]][self.max_area_field]
