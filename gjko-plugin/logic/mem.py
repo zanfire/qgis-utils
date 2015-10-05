@@ -27,13 +27,11 @@ def merge(feature, features_input):
             #    continue
             g = f.geometry()
             if geom.within(g):
-                print("within ...")
                 geom = QgsGeometry(g)
                 features_output.append(f)
                 breakloop = False
                 break
             if not geom.disjoint(g) or geom.touches(g):
-                print("disjoint")
                 geom = QgsGeometry(geom.combine(g))
                 features_output.append(f)
                 breakloop = False
