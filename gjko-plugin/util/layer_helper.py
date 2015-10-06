@@ -1,5 +1,5 @@
 from qgis.utils import iface
-from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsVectorFileWriter, QgsSpatialIndex, QgsGeometry
+from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsVectorFileWriter, QgsSpatialIndex, QgsGeometry, QgsMessageLog
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -58,3 +58,23 @@ def show_features(layer, features):
     layer.setSelectedFeatures(selection)
     iface.actionZoomToSelected().trigger()
 
+
+def get_intersection_max_area(index, f, features):
+    g = f.geometry()
+    ids = index.intersects(g.boundingBox())
+    QgsMessageLog.logMessage("Intersection returns " + str(len(ids)) + " IDs.")
+    if len(ids) == 1:
+        if not g.disjoint(features[ids[0]].geometry()):
+            return ids[0]
+    elif len(ids) > 1:
+        id_max = -1
+        area_max = -1
+        for i in ids:
+            if not g.disjoint(features[i].geometry()):
+                common = QgsGeometry(g.intersection(features[i].geometry()))
+                if common.area() > area_max:
+                    id_max = i
+                    area_max = common.area()
+        if id_max > -1:
+            return id_max
+    return -1

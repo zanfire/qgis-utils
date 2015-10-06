@@ -46,48 +46,20 @@ class SpatialJoinAction(Action):
             count += 1
             progress.emit(int(count * (100.0 / count_max)))  
             feature = QgsFeature(QgsFields(self.fields))
-            ids = index.intersects(f.geometry().boundingBox())
+            idf = layer_helper.get_intersection_max_area(index, f, cadastre_features)
             add = False
-            if len(ids) == 0:
-                add = False
-            elif len(ids) == 1:
+            if idf >= 0:
                 add = True
-                feature[FIELD_CODCAT] = cadastre_features[ids[0]][FIELD_CODCAT]
-            else:
-                id_max = -1
-                area_max = -1
-                for i in ids:
-                    common = QgsGeometry(f.geometry().intersection(cadastre_features[i].geometry()))
-                    if common.area() > area_max:
-                        id_max = i
-                        area_max = common.area()
-                if id_max > -1:
-                    add = True
-                    feature[FIELD_CODCAT] = cadastre_features[id_max][FIELD_CODCAT]
+                feature[FIELD_CODCAT] = cadastre_features[idf][FIELD_CODCAT]
             # Try with the cadastre terrain.
             if not add:
-                # Search in cadastre terrain
-                ids = index_cadastre_terrain.intersects(f.geometry().boundingBox())
-                if len(ids) == 0:
-                    add = False
-                if len(ids) == 1:
+                idf = layer_helper.get_intersection_max_area(index_cadastre_terrain, f, cadastre_terrain_features)
+                if idf >= 0:
                     add = True
-                    feature[FIELD_CODCAT] = cadastre_terrain_features[ids[0]][FIELD_CADASTRE_TERRAIN_ID]
-                else:
-                    id_max = -1
-                    area_max = -1
-                    for i in ids:
-                        common = QgsGeometry(f.geometry().intersection(cadastre_terrain_features[i].geometry()))
-                        if common.area() > area_max:
-                            id_max = i
-                            area_max = common.area()
-                    if id_max > -1:
-                        add = True
-                        feature[FIELD_CODCAT] = cadastre_terrain_features[id_max][FIELD_CADASTRE_TERRAIN_ID]
+                    feature[FIELD_CODCAT] = cadastre_terrain_features[idf][FIELD_CADASTRE_TERRAIN_ID]
             # Final we add this feature
             if add:
                 feature.setGeometry(QgsGeometry(f.geometry()))
-                # Determinate cadastre ID.
                 for attr in self.volumes_layer.pendingFields():
                     feature[attr.name()] = f[attr.name()]
                 self.new_features.append(feature)
