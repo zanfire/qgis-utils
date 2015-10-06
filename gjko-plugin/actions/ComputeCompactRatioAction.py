@@ -41,7 +41,7 @@ class ComputeCompactRatioAction(Action):
         if self.dlg.create_intersection_layer_check():
             self.create_intersection_layer(self.layer, index, features_id)
         t3 = time.clock() 
-        print("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
+        QgsMessageLog.logMessage("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
 
     def compute_volumes(self, progress, features, index, features_id, map_cadastre_building):
         result = []
@@ -53,7 +53,6 @@ class ComputeCompactRatioAction(Action):
             progress.emit(int(count * (50.0 / count_max)))  
             feature = QgsFeature(self.volumes_layer.pendingFields())
             g = f.geometry()
-            print(type(g))
             feature.setGeometry(QgsGeometry(g))
             #feature.setGeometry(QgsGeometry(layer_helper.copy_geometry(f)))
             feature[FIELD_ID_CADASTRE] = f[FIELD_CODCAT] 
@@ -115,19 +114,18 @@ class ComputeCompactRatioAction(Action):
                     #features_temp[idx][FIELD_ID_EPC] = ''
                     
                     feature[FIELD_FOOT_AREA] = 0
-                    feature[FIELD_FLOOR_AREA] = 0
                     feature[FIELD_VOL_GROSS] = 0
                     feature[FIELD_DISP_SURF] = 0
                     feature[FIELD_WALL_SURF] = 0
                     total_disp = 0
                     for elem in feature_set:
                         elem[FIELD_ID_MEM] = id_mem
-                        feature[FIELD_FOOT_AREA] += f[FIELD_AREA_GROSS]
-                        #feature[FIELD_FLOOR_AREA] += f[FIELD_AREA_NET] 
-                        feature[FIELD_VOL_GROSS] += f[FIELD_VOL_GROSS]
-                        feature[FIELD_DISP_SURF] += f[FIELD_DISP_SURF]
-                        feature[FIELD_WALL_SURF] += f[FIELD_WALL_SURF]
-                    feature[FIELD_COMPACT_R] = feature[FIELD_DISP_SURF] / feature[FIELD_VOL_GROSS]
+                        feature[FIELD_FOOT_AREA] += elem[FIELD_AREA_GROSS]
+                        feature[FIELD_VOL_GROSS] += elem[FIELD_VOL_GROSS]
+                        feature[FIELD_DISP_SURF] += elem[FIELD_DISP_SURF]
+                        feature[FIELD_WALL_SURF] += elem[FIELD_WALL_SURF]
+                    if feature[FIELD_VOL_GROSS] > 0:
+                        feature[FIELD_COMPACT_R] = feature[FIELD_DISP_SURF] / feature[FIELD_VOL_GROSS]
                     idx += 1
             # We have created the final set.
             result.extend(features_temp)
