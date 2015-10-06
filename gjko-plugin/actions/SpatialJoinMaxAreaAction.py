@@ -55,15 +55,17 @@ class SpatialJoinMaxAreaAction(Action):
                 add = True
             elif len(ids) == 1:
                 add = True
-                feature[self.max_area_field] = features2[ids[0]][self.max_area_field]
+                if not f.geometry().disjoint(features2[ids[0]].geometry()):
+                    feature[self.max_area_field] = features2[ids[0]][self.max_area_field]
             else:
                 id_max = -1
                 area_max = -1
                 for i in ids:
-                    common = QgsGeometry(f.geometry().intersection(features2[i].geometry()))
-                    if common.area() > area_max:
-                        id_max = i
-                        area_max = common.area()
+                    if not f.geometry().disjoint(features2[i].geometry()):
+                        common = QgsGeometry(f.geometry().intersection(features2[i].geometry()))
+                        if common.area() > area_max:
+                            id_max = i
+                            area_max = common.area()
                 if id_max > -1:
                     add = True
                     feature[self.max_area_field] = features2[id_max][self.max_area_field]
