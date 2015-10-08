@@ -87,7 +87,7 @@ class AssignClassAction(Action):
                     
                     f[FIELD_FLOOR_AREA] = 0
                     f[FIELD_VOL_NET] = 0
-                    for vol in self.epc_to_volumes[id_epc]:
+                    for vol in self.idmem_to_volumes[f[FIELD_ID_MEM]]:
                         f[FIELD_FLOOR_AREA] += vol[FIELD_FLOOR_AREA]
                         f[FIELD_VOL_NET] += vol[FIELD_VOL_NET]
                 self.updated_building_features.append(f)
@@ -95,7 +95,7 @@ class AssignClassAction(Action):
     def compute_volumes(self, progress):
         volumes_features = layer_helper.load_features(self.volumes_layer)
 
-        self.epc_to_volumes = {}
+        self.idmem_to_volumes = {}
         self.updated_volumes_features = []
         count = 0
         count_max = len(volumes_features.values())
@@ -123,10 +123,11 @@ class AssignClassAction(Action):
                 f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
 
                 self.updated_volumes_features.append(f)
-                if id_epc in self.epc_to_volumes.keys():
-                    self.epc_to_volumes[id_epc].append(f)
+                id_mem = f[FIELD_ID_MEM]
+                if id_mem in self.idmem_to_volumes.keys():
+                    self.idmem_to_volumes[id_mem].append(f)
                 else:
-                    self.epc_to_volumes[id_epc] = [ f ] 
+                    self.idmem_to_volumes[id_mem] = [ f ] 
 
     def apply(self):
         self.building_layer.startEditing()
