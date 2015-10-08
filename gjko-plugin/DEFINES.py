@@ -112,6 +112,7 @@ LAYER_VOLUMES_FIELDS = [
         #un-vol_MEM  identifier of the MEM volumetric unit
         QgsField(FIELD_USE, QVariant.String), # residential (E1) or non-residential (En1) building
         QgsField(FIELD_ID_EPC, QVariant.String), # identifier of EPCs data
+        QgsField(FIELD_TYPOLOGY, QVariant.String),
         #TYPOLOGY    identifier of compactness-age typology
         #ID_ISTAT    identifier of ISTAT zone
         #ID_OMI  identifier of OMI zone
