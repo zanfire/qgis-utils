@@ -30,6 +30,7 @@ class AssignClassAction(Action):
         self.compute_building(progress)
 
     def compute_building(self, progress):
+        QgsMessageLog.logMessage("Starting compute building ...")
         istat_features = layer_helper.load_features(self.istat_layer)
         building_features = layer_helper.load_features(self.building_layer)
         index = layer_helper.build_spatialindex(istat_features.values())
@@ -54,11 +55,17 @@ class AssignClassAction(Action):
                 f[FIELD_ID_ISTAT] = codistat
                 f[FIELD_AGE] = self.istat_csv.get_element(codistat, FIELD_CSV_SEZ_AGE)
                 #QgsMessageLog.logMessage("Found age: " + str(f[FIELD_AGE]))
-                if f[FIELD_AGE] == None:
-                    QgsMessageLog.logMessage("Age not available, skipping ...")
-                    continue
+                #if f[FIELD_AGE] == None:
+                #    QgsMessageLog.logMessage("Age not available, skipping ...")
                 #f[FIELD_EPOCH] = epoch
                 f[FIELD_TYPOLOGY] = code_generator.get_code(f[FIELD_USE], f[FIELD_AGE], f[FIELD_COMPACT_R])
+                id_mem = f[FIELD_ID_MEM]
+                if id_mem in self.idmem_to_volumes.keys():
+                    for vol in self.idmem_to_volumes[id_mem]:
+                        vol[FIELD_TYPOLOGY] = f[FIELD_TYPOLOGY]
+                else:
+                    QgsMessageLog.logMessage("id_mem missing ... " + id_mem)
+
                 id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
                 epcs = self.epcs_csv.get(id_epc)
                 if epcs != None:
@@ -88,8 +95,11 @@ class AssignClassAction(Action):
                     f[FIELD_FLOOR_AREA] = 0
                     f[FIELD_VOL_NET] = 0
                     for vol in self.idmem_to_volumes[f[FIELD_ID_MEM]]:
-                        f[FIELD_FLOOR_AREA] += vol[FIELD_FLOOR_AREA]
-                        f[FIELD_VOL_NET] += vol[FIELD_VOL_NET]
+                        try:
+                            f[FIELD_FLOOR_AREA] += vol[FIELD_FLOOR_AREA]
+                            f[FIELD_VOL_NET] += vol[FIELD_VOL_NET]
+                        except:
+                            QgsMessageLog.logMessage("Same id_mem but different epc (different USO???)")
                 self.updated_building_features.append(f)
 
     def compute_volumes(self, progress):
@@ -105,7 +115,7 @@ class AssignClassAction(Action):
             id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
             epcs = self.epcs_csv.get(id_epc)
             if epcs != None:
-                QgsMessageLog.logMessage("Found id_epc: " + id_epc)
+                QgsMessageLog.logMessage("Found id_epc: " + id_epc + ", id_mem " + f[FIELD_ID_MEM])
                 f[FIELD_ID_EPC] = id_epc
                 f[FIELD_AREA_R] = self.epcs_csv.get_element(id_epc, 'area_r')
                 f[FIELD_VOL_R] = self.epcs_csv.get_element(id_epc, 'vol_r')
@@ -121,13 +131,13 @@ class AssignClassAction(Action):
                     n_level = 1
                 f[FIELD_N_LEVEL] = n_level
                 f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
-
-                self.updated_volumes_features.append(f)
-                id_mem = f[FIELD_ID_MEM]
-                if id_mem in self.idmem_to_volumes.keys():
-                    self.idmem_to_volumes[id_mem].append(f)
-                else:
-                    self.idmem_to_volumes[id_mem] = [ f ] 
+            self.updated_volumes_features.append(f)
+            # Update map with all features not only with EP# Update map with all features not only with EPCC
+            id_mem = f[FIELD_ID_MEM]
+            if id_mem in self.idmem_to_volumes.keys():
+                self.idmem_to_volumes[id_mem].append(f)
+            else:
+                self.idmem_to_volumes[id_mem] = [ f ] 
 
     def apply(self):
         self.building_layer.startEditing()
