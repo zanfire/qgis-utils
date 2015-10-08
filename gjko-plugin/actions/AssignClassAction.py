@@ -50,9 +50,9 @@ class AssignClassAction(Action):
                     id_max = i
                     area_max = common.area()
             if id_max > -1:
-                codistat = str(int(istat_features[i]['SEZ2011']))
+                codistat = str(int(istat_features[i][FIELD_SEZ_ISTAT]))
                 f[FIELD_ID_ISTAT] = codistat
-                f[FIELD_AGE] = self.istat_csv.get_element(codistat, 'SEZ_period')
+                f[FIELD_AGE] = self.istat_csv.get_element(codistat, FIELD_CSV_SEZ_AGE)
                 #QgsMessageLog.logMessage("Found age: " + str(f[FIELD_AGE]))
                 if f[FIELD_AGE] == None:
                     QgsMessageLog.logMessage("Age not available, skipping ...")

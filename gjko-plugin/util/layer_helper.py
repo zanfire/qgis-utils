@@ -62,7 +62,7 @@ def show_features(layer, features):
 def get_intersection_max_area(index, f, features):
     g = f.geometry()
     ids = index.intersects(g.boundingBox())
-    QgsMessageLog.logMessage("Intersection returns " + str(len(ids)) + " IDs.")
+    #QgsMessageLog.logMessage("Intersection returns " + str(len(ids)) + " IDs.")
     if len(ids) == 1:
         if not g.disjoint(features[ids[0]].geometry()):
             return ids[0]

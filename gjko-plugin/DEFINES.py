@@ -21,6 +21,9 @@ FIELD_HEIGHT                    = 'HEIGHT'
 FIELD_PERIMETER_ADJACENT        = 'PERIM_ABJ'
 FIELD_CODISTAT                  = 'COD_ISTAT'
 
+FIELD_SEZ_ISTAT                 = 'SEZ2011'
+FIELD_CSV_SEZ_AGE               = 'SEZ_AGE'
+
 
 # Final tables
 

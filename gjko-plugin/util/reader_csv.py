@@ -15,7 +15,7 @@ class BaseReader:
         try:
             first = True
             with open(filename, 'rU') as csvfile:
-                result = csv.reader(csvfile, csv.excel) #delimiter=',', quotechar='\\')
+                result = csv.reader(csvfile, csv.excel, delimiter=',', quotechar='\\')
                 for row in result:
                     if first:
                         self.handle_header(row)
