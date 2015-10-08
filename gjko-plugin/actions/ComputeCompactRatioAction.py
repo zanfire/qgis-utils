@@ -15,6 +15,8 @@ class ComputeCompactRatioAction(Action):
     Compute energy efficency base value.
     """
     
+    intersection_features = None
+
     def __init__(self, iface, menu_name):
         super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute energy efficency values...")
 
@@ -39,7 +41,7 @@ class ComputeCompactRatioAction(Action):
         t2 = time.clock()
         self.building_features = self.compute_building(progress, map_cadastre_building)
         if self.dlg.create_intersection_layer_check():
-            self.create_intersection_layer(self.layer, index, features_id)
+            self.create_intersection_layer(index, features_id)
         t3 = time.clock() 
         QgsMessageLog.logMessage("Performance t1 " + str(t2 - t1) + ", t2 " + str(t3 - t2))
 
@@ -98,7 +100,7 @@ class ComputeCompactRatioAction(Action):
                 insert = True
                 (geom, feature_set) = mem.merge(f, map_cadastre_building[cadastre])
                 for fe in features_temp:
-                    if geom.equals(fe.geometry()) or geom.contains(fe.geometry()):
+                    if not geom.disjoint(fe.geometry()) or geom.equals(fe.geometry()) or geom.contains(fe.geometry()) or geom.within(fe.geometry()):
                         insert = False
                         break
                 if insert:
@@ -131,8 +133,8 @@ class ComputeCompactRatioAction(Action):
             result.extend(features_temp)
         return result
 
-    def create_intersection_layer(self, l, index, features):
-        layer = layer_helper.create_layer(l.name() + "_intersection", [], l, 'LineString')
+    def create_intersection_layer(self, index, features):
+        self.intersection_layer = layer_helper.create_layer("Volumes_intersection", [], self.volumes_layer, 'LineString', False)
         new_features = []
         for f in features.values():
             g1 = f.geometry()
@@ -140,14 +142,12 @@ class ComputeCompactRatioAction(Action):
             for i in ids:
                 g2 = features[i].geometry()
                 if not g1.equals(g2):
-                    intersection_set = mem.get_intersection(g1, g2)
+                    intersection_set = mem.get_intersection_debug(g1, g2)
                     for intersection in intersection_set:
                         feature = QgsFeature()
                         feature.setGeometry(intersection)
                         new_features.append(feature)
-        layer.startEditing()
-        layer.dataProvider().addFeatures(new_features)
-        layer.commitChanges()
+        self.intersection_features = new_features
 
     def apply(self):
         if self.dlg.volumes_layer_path() != '':
@@ -167,3 +167,8 @@ class ComputeCompactRatioAction(Action):
             if result == QgsVectorFileWriter.NoError:
                 layer_name = self.dlg.building_layer_name()
                 self.iface.addVectorLayer(self.dlg.building_layer_path(), layer_name, "ogr") 
+        if self.intersection_features != None:
+            self.intersection_layer.startEditing()
+            self.intersection_layer.dataProvider().addFeatures(self.intersection_features)
+            self.intersection_layer.commitChanges()
+            QgsMapLayerRegistry.instance().addMapLayer(self.intersection_layer) 

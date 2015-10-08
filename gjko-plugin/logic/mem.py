@@ -19,19 +19,17 @@ def merge(feature, features_input):
         for f in features_input:
             if f in features_output:
                 continue
+            g = f.geometry()
             #if geom.equals(g): 
             #    continue
-            #if geom.contains(g):
-            #    continue
-            #if geom.overlaps(g):
-            #    continue
-            g = f.geometry()
+            if geom.contains(g):
+                continue
             if geom.within(g):
                 geom = QgsGeometry(g)
                 features_output.append(f)
                 breakloop = False
                 break
-            if not geom.disjoint(g) or geom.touches(g):
+            if not geom.disjoint(g) or geom.touches(g) or geom.overlaps(g):
                 geom = QgsGeometry(geom.combine(g))
                 features_output.append(f)
                 breakloop = False
