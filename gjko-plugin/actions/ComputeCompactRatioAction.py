@@ -74,12 +74,11 @@ class ComputeCompactRatioAction(Action):
             
             result.append(feature)
             # Create map cadastre to features for next steps.
-            id_cadastre = f[FIELD_CODCAT]
+            id_cadastre = feature[FIELD_USE] + '-' + f[FIELD_CODCAT]
             if not id_cadastre in map_cadastre_building.keys():
                 map_cadastre_building[id_cadastre] = [ feature ]
             else:
                 map_cadastre_building[id_cadastre].append(feature)
-
         return result
 
         
@@ -91,14 +90,14 @@ class ComputeCompactRatioAction(Action):
         result = []
         count = 0
         count_max = len(map_cadastre_building.keys())
-        for cadastre in map_cadastre_building.keys():
+        for key in map_cadastre_building.keys():
             count += 1
             progress.emit(50 + int(count * (50.0 / count_max)))  
             features_temp = [ ]
             idx = 0
-            for f in map_cadastre_building[cadastre]:
+            for f in map_cadastre_building[key]:
                 insert = True
-                (geom, feature_set) = mem.merge(f, map_cadastre_building[cadastre])
+                (geom, feature_set) = mem.merge(f, map_cadastre_building[key])
                 for fe in features_temp:
                     if not geom.disjoint(fe.geometry()) or geom.equals(fe.geometry()) or geom.contains(fe.geometry()) or geom.within(fe.geometry()):
                         insert = False
@@ -107,8 +106,8 @@ class ComputeCompactRatioAction(Action):
                     feature = QgsFeature(self.building_layer.pendingFields())
                     features_temp.append(feature);
                     feature.setGeometry(geom)
-                    id_mem = cadastre + '_' + str(idx)
-                    feature[FIELD_ID_CADASTRE] = cadastre
+                    id_mem = key + '_' + str(idx)
+                    feature[FIELD_ID_CADASTRE] = '-'.join(key.split('-')[1:])
                     feature[FIELD_ID_MEM] = id_mem
                     feature[FIELD_USE] = f[FIELD_USE]
                     #features_temp[idx][FIELD_USE] = f[FIELD_TYPE_USAGE]
