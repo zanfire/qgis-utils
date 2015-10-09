@@ -55,7 +55,7 @@ def get_code(prefix, epoch_str, sv):
     elif sv > 0.6 and sv <= 0.7: compactness = '5'
     elif sv > 0.7 and sv <= 0.8: compactness = '6'
     else: compactness = '7'
-    return prefix + '-' + construction_age + '.' + compactness 
+    return prefix + '-' + construction_age + '-' + compactness 
 
 
 def get_code_for_residential_building(epoch, sv):
