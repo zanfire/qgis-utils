@@ -102,7 +102,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Assign class", None))
+        Dialog.setWindowTitle(_translate("Dialog", "3 - Assign EPC and Typology", None))
         self.label_4.setText(_translate("Dialog", "Volumes layer:", None))
         self.label_6.setText(_translate("Dialog", "Building layer:", None))
         self.label_2.setText(_translate("Dialog", "EPCs CSV file:", None))

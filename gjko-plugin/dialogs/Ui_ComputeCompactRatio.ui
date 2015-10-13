@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Create energy efficency layer</string>
+   <string>2 - Create energy layers</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>

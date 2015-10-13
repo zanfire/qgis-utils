@@ -88,7 +88,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Create energy efficency layer", None))
+        Dialog.setWindowTitle(_translate("Dialog", "2 - Create energy layers", None))
         self.label_2.setText(_translate("Dialog", "Input layer:", None))
         self.label_3.setText(_translate("Dialog", "Volumes layer:", None))
         self.locationButton1.setText(_translate("Dialog", "Location", None))

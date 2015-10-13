@@ -95,7 +95,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Spatial join volumes cadastre", None))
+        Dialog.setWindowTitle(_translate("Dialog", "1 - Assign ID_CAD", None))
         self.label_2.setText(_translate("Dialog", "Volumes layer:", None))
         self.label_5.setText(_translate("Dialog", "Cadastre layer:", None))
         self.label_6.setText(_translate("Dialog", "Cadastre terrains layer:", None))

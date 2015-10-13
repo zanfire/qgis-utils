@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Assign class</string>
+   <string>3 - Assign EPC and Typology</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>

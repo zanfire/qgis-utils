@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Spatial join volumes cadastre</string>
+   <string>1 - Assign ID_CAD</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
