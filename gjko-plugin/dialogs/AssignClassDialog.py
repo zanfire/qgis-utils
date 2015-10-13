@@ -26,6 +26,7 @@ class AssignClassDialog(QtGui.QDialog):
         helper_selectcombo(self.ui.istatCombo, "istat")
 
         QtCore.QObject.connect(self.ui.epcOpenButton, QtCore.SIGNAL('clicked()'), self.epc_open_file)
+        QtCore.QObject.connect(self.ui.typologyOpenButton, QtCore.SIGNAL('clicked()'), self.typology_open_file)
         QtCore.QObject.connect(self.ui.istatOpenButton, QtCore.SIGNAL('clicked()'), self.istat_open_file)
 
 
@@ -37,6 +38,9 @@ class AssignClassDialog(QtGui.QDialog):
    
     def epcs_csv_file(self):
         return self.ui.epcEdit.text()
+    
+    def typology_csv_file(self):
+        return self.ui.typologyEdit.text()
 
     def istat_csv_file(self):
         return self.ui.istatEdit.text()
@@ -44,12 +48,13 @@ class AssignClassDialog(QtGui.QDialog):
     def istat_layer_name(self):
         return str(self.ui.istatCombo.currentText())
 
-    #def create_intersection_layer_check(self):
-    #     return self.ui.intersectionLayerCheckBox.isChecked()
-
     def epc_open_file(self):
         f = self.open_file()
         self.ui.epcEdit.setText(f)
+
+    def typology_open_file(self):
+        f = self.open_file()
+        self.ui.typologyEdit.setText(f)
 
     def istat_open_file(self):
         f = self.open_file()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>401</width>
-    <height>394</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
      <x>10</x>
      <y>10</y>
      <width>381</width>
-     <height>385</height>
+     <height>472</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -78,6 +78,23 @@
     </item>
     <item>
      <widget class="QPushButton" name="epcOpenButton">
+      <property name="text">
+       <string>Select file</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Typology CSV file:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="typologyEdit"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="typologyOpenButton">
       <property name="text">
        <string>Select file</string>
       </property>

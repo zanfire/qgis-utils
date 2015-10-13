@@ -24,6 +24,7 @@ class AssignClassAction(Action):
         self.istat_layer = layer_helper.get_layer(self.dlg.istat_layer_name())
         self.istat_csv = reader_csv.ISTAT(self.dlg.istat_csv_file())
         self.epcs_csv = reader_csv.EPCs(self.dlg.epcs_csv_file())
+        self.typology_csv = reader_csv.EPCs(self.dlg.typology_csv_file())
 
     def compute(self, progress):
         self.compute_volumes(progress)
@@ -54,52 +55,34 @@ class AssignClassAction(Action):
                 codistat = str(int(istat_features[id_max][FIELD_SEZ_ISTAT]))
                 f[FIELD_ID_ISTAT] = codistat
                 f[FIELD_AGE] = self.istat_csv.get_element(codistat, FIELD_CSV_SEZ_AGE)
-                #QgsMessageLog.logMessage("Found age: " + str(f[FIELD_AGE]))
-                #if f[FIELD_AGE] == None:
-                #    QgsMessageLog.logMessage("Age not available, skipping ...")
-                #f[FIELD_EPOCH] = epoch
                 f[FIELD_TYPOLOGY] = code_generator.get_code(f[FIELD_USE], f[FIELD_AGE], f[FIELD_COMPACT_R])
                 id_mem = f[FIELD_ID_MEM]
                 if id_mem in self.idmem_to_volumes.keys():
                     for vol in self.idmem_to_volumes[id_mem]:
                         vol[FIELD_TYPOLOGY] = f[FIELD_TYPOLOGY]
+                        self.assign_volumes_values(vol, self.typology_csv, f[FIELD_TYPOLOGY])
                 else:
                     QgsMessageLog.logMessage("id_mem missing ... " + id_mem)
 
                 id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
                 epcs = self.epcs_csv.get(id_epc)
+                if epcs == None:
+                    self.assign_building_values(f, self.typology_csv, f[FIELD_TYPOLOGY])
                 if epcs != None:
                     f[FIELD_ID_EPC] = id_epc
                     epc_age = self.epcs_csv.get_element(id_epc, 'age')
                     if epc_age != None and epc_age != '':
                         f[FIELD_AGE] = epc_age
-                    f[FIELD_WIND_R] = self.epcs_csv.get_element(id_epc, 'wind_r')
-                    f[FIELD_WIND_SURF] = self.epcs_csv.get_element(id_epc, 'wind_surf')
-                    f[FIELD_U_ENV] = self.epcs_csv.get_element(id_epc, 'u_env')
-                    f[FIELD_U_ROOF] = self.epcs_csv.get_element(id_epc, 'u_roof')
-                    f[FIELD_U_GROUND] = self.epcs_csv.get_element(id_epc, 'u_ground')
-                    f[FIELD_U_WIND] = self.epcs_csv.get_element(id_epc, 'u_wind')
-                    f[FIELD_EPH] = self.epcs_csv.get_element(id_epc, 'eph')
-                    f[FIELD_ETH] = self.epcs_csv.get_element(id_epc, 'eth')
-                    f[FIELD_ETC] = self.epcs_csv.get_element(id_epc, 'etc')
-                    f[FIELD_EFER] = self.epcs_csv.get_element(id_epc, 'efer')
-                    f[FIELD_EPW] = self.epcs_csv.get_element(id_epc, 'epw')
-                    f[FIELD_EPT] = self.epcs_csv.get_element(id_epc, 'ept')
-                    f[FIELD_E_HEAT] = self.epcs_csv.get_element(id_epc, 'e_heat')
-                    f[FIELD_E_DHW] = self.epcs_csv.get_element(id_epc, 'e_dhw')
-                    f[FIELD_E_H_DHW] = self.epcs_csv.get_element(id_epc, 'e_h_dhw')
-                    # TODO: Set to zero if missing
-                    f[FIELD_PV_AREA] = self.epcs_csv.get_element(id_epc, 'fv_area', 0)
-                    f[FIELD_ST_AREA] = self.epcs_csv.get_element(id_epc, 'st_area', 0)
+                    self.assign_building_values(f, self.epcs_csv, id_epc)
                     
-                    f[FIELD_FLOOR_AREA] = 0
-                    f[FIELD_VOL_NET] = 0
-                    for vol in self.idmem_to_volumes[f[FIELD_ID_MEM]]:
-                        try:
-                            f[FIELD_FLOOR_AREA] += vol[FIELD_FLOOR_AREA]
-                            f[FIELD_VOL_NET] += vol[FIELD_VOL_NET]
-                        except:
-                            QgsMessageLog.logMessage("Same id_mem but different epc (different USO???)")
+                f[FIELD_FLOOR_AREA] = 0
+                f[FIELD_VOL_NET] = 0
+                for vol in self.idmem_to_volumes[f[FIELD_ID_MEM]]:
+                    try:
+                        f[FIELD_FLOOR_AREA] += vol[FIELD_FLOOR_AREA]
+                        f[FIELD_VOL_NET] += vol[FIELD_VOL_NET]
+                    except:
+                        QgsMessageLog.logMessage("Same id_mem but different epc (different USO???)")
                 self.updated_building_features.append(f)
 
     def compute_volumes(self, progress):
@@ -115,22 +98,8 @@ class AssignClassAction(Action):
             id_epc = reader_csv.codcat_to_epcs(f[FIELD_USE], f[FIELD_ID_CADASTRE])
             epcs = self.epcs_csv.get(id_epc)
             if epcs != None:
-                QgsMessageLog.logMessage("Found id_epc: " + id_epc + ", id_mem " + f[FIELD_ID_MEM])
                 f[FIELD_ID_EPC] = id_epc
-                f[FIELD_AREA_R] = self.epcs_csv.get_element(id_epc, 'area_r')
-                f[FIELD_VOL_R] = self.epcs_csv.get_element(id_epc, 'vol_r')
-                f[FIELD_H_LEVEL] = self.epcs_csv.get_element(id_epc, 'h_level')
-                f[FIELD_AREA_NET] = float(f[FIELD_AREA_GROSS]) * float(f[FIELD_AREA_R])
-                f[FIELD_VOL_NET] = float(f[FIELD_VOL_GROSS]) * float(f[FIELD_VOL_R])
-                n_level = float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL])
-                if math.modf(n_level) > 0.8:
-                    n_level = math.ceil(n_level)
-                else:
-                    n_level = math.floor(n_level)
-                if n_level < 1:
-                    n_level = 1
-                f[FIELD_N_LEVEL] = n_level
-                f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
+                self.assign_volumes_values(f, self.epcs_csv, id_epc)
             self.updated_volumes_features.append(f)
             # Update map with all features not only with EP# Update map with all features not only with EPCC
             id_mem = f[FIELD_ID_MEM]
@@ -150,3 +119,43 @@ class AssignClassAction(Action):
         self.volumes_layer.commitChanges()
         
         return None
+    
+    def assign_volumes_values(self, f, csv, id_elem):
+        try:
+            f[FIELD_AREA_R] = csv.get_element(id_elem, 'area_r')
+            f[FIELD_VOL_R] = csv.get_element(id_elem, 'vol_r')
+            f[FIELD_H_LEVEL] = csv.get_element(id_elem, 'h_level')
+            f[FIELD_AREA_NET] = float(f[FIELD_AREA_GROSS]) * float(f[FIELD_AREA_R])
+            f[FIELD_VOL_NET] = float(f[FIELD_VOL_GROSS]) * float(f[FIELD_VOL_R])
+            n_level = float(f[FIELD_HEIGHT]) / float(f[FIELD_H_LEVEL])
+            if math.modf(n_level) > 0.8:
+                n_level = math.ceil(n_level)
+            else:
+                n_level = math.floor(n_level)
+            if n_level < 1:
+                n_level = 1
+            f[FIELD_N_LEVEL] = n_level
+            f[FIELD_FLOOR_AREA] = float(f[FIELD_AREA_NET]) * float(f[FIELD_N_LEVEL])
+        except:
+            QgsMessageLog.logMessage("Error for " + id_elem + " no values.")
+
+
+    def assign_building_values(self, f, csv, id_elem):
+        f[FIELD_WIND_R] = csv.get_element(id_elem, 'wind_r')
+        f[FIELD_WIND_SURF] = csv.get_element(id_elem, 'wind_surf')
+        f[FIELD_U_ENV] = csv.get_element(id_elem, 'u_env')
+        f[FIELD_U_ROOF] = self.epcs_csv.get_element(id_elem, 'u_roof')
+        f[FIELD_U_GROUND] = self.epcs_csv.get_element(id_elem, 'u_ground')
+        f[FIELD_U_WIND] = csv.get_element(id_elem, 'u_wind')
+        f[FIELD_EPH] = csv.get_element(id_elem, 'eph')
+        f[FIELD_ETH] = csv.get_element(id_elem, 'eth')
+        f[FIELD_ETC] = csv.get_element(id_elem, 'etc')
+        f[FIELD_EFER] = csv.get_element(id_elem, 'efer')
+        f[FIELD_EPW] = csv.get_element(id_elem, 'epw')
+        f[FIELD_EPT] = csv.get_element(id_elem, 'ept')
+        f[FIELD_E_HEAT] = csv.get_element(id_elem, 'e_heat')
+        f[FIELD_E_DHW] = csv.get_element(id_elem, 'e_dhw')
+        f[FIELD_E_H_DHW] = csv.get_element(id_elem, 'e_h_dhw')
+        f[FIELD_PV_AREA] = csv.get_element(id_elem, 'fv_area', 0)
+        f[FIELD_ST_AREA] = csv.get_element(id_elem, 'st_area', 0)
+ 
