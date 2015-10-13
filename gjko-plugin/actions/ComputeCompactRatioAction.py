@@ -18,7 +18,7 @@ class ComputeCompactRatioAction(Action):
     intersection_features = None
 
     def __init__(self, iface, menu_name):
-        super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "Compute energy efficency values...")
+        super(ComputeCompactRatioAction, self).__init__(iface, menu_name, "2 - Create energy layers")
 
     def create_dialog(self): 
         return ComputeCompactRatioDialog() 

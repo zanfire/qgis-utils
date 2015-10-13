@@ -7,30 +7,40 @@ from resources import *
 
 class Gjko: 
 
+    menu = None
+    tool_menu = None
+    actions = []
+    tool_actions = []
+
     def __init__(self, iface):
-        menuName = "&Energy efficency for building"
+        menuName = "&Municipal Energy Model"
         self.menu = QMenu(iface.mainWindow())
         self.menu.setObjectName("gjkoMenu")
         self.menu.setTitle(menuName)
+        menuToolName = "&Municipal Energy Model - tools"
+        self.tool_menu = QMenu(iface.mainWindow())
+        self.tool_menu.setObjectName("gjkoToolMenu")
+        self.tool_menu.setTitle(menuToolName)
+
 
         # Save reference to the QGIS interface
         self.iface = iface
-        self.actions = []
         self.actions.append(SpatialJoinAction(iface, menuName))
         self.actions.append(ComputeCompactRatioAction(iface, menuName))
         self.actions.append(AssignClassAction(iface, menuName))
-        self.actions.append(ManualCheckAction(iface, menuName))
-        self.actions.append(SpatialJoinMaxAreaAction(iface, menuName))
+        self.tool_actions.append(ManualCheckAction(iface, menuToolName))
+        self.tool_actions.append(SpatialJoinMaxAreaAction(iface, menuToolName))
 
     def initGui(self): 
-        #menuBar = self.iface.mainWindow().menuBar()
-        #menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
-
         for a in self.actions:
             a.load()
             self.menu.addAction(a.action)
-
+        for a in self.tool_actions:
+            a.load()
+            self.tool_menu.addAction(a.action)
+    
     def unload(self):
          for a in self.actions:
             a.unload()
-         #self.menu.deleteLater()
+         for a in self.tool_actions:
+            a.unload()

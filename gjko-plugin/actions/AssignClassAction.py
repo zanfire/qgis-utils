@@ -12,7 +12,7 @@ from ..logic import mem, code_generator
 
 class AssignClassAction(Action):
     def __init__(self, iface, menu_name):
-        super(AssignClassAction, self).__init__(iface, menu_name, "Assign class...")
+        super(AssignClassAction, self).__init__(iface, menu_name, "3 - Assign EPC and Typology")
     
     def create_dialog(self):
         return AssignClassDialog() 

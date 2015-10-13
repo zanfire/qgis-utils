@@ -13,7 +13,7 @@ from ..logic import mem, code_generator
 
 class SpatialJoinAction(Action):
     def __init__(self, iface, menu_name):
-        super(SpatialJoinAction, self).__init__(iface, menu_name, "Spatial join...")
+        super(SpatialJoinAction, self).__init__(iface, menu_name, "1 - Assign ID_CAD")
     
     def create_dialog(self):
         return SpatialJoinDialog() 
