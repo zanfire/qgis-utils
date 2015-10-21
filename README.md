@@ -10,5 +10,6 @@ To develop on this plugin you can use your preferred editor (my is VIM :-P ) and
  - pyrcc4-2.7
  - pyuic4-2.7
  - make
+
 When you update the UI file you must run Makefile in gjko-plugin folder.
 

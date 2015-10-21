@@ -1,30 +1,23 @@
 ; the next section is mandatory
-
 [general]
-name=GjkoThesis
-email=zanfire@.com
-author=Matteo Valdina, Giulia
+name=Municipal Energy Model
+email=matteo.valdina@gmail.com
+author=Matteo Valdina, Giulia Pasetti
 qgisMinimumVersion=2.0
-description=A quite general description.
-about=This paragraph can contain a detailed description
-version=version 0.0
+description=Create a model of municipal energy.
+about=Reading different layer and information to create a model with enegy values 
+version=version 1.0
 tracker=http://www.github.com/zanfire/qgis-utils
 repository=http://www.github.com/zanfire/qgis-utils
 ; end of mandatory metadata
 
 ; start of optional metadata
 category=Raster
-changelog=The changelog lists the plugin versions
-; Tags are in comma separated value format, spaces are allowed within the
-; tag name.
-; Tags should be in English language. Please also check for existing tags and
-; synonyms before creating a new one.
-tags=
+changelog=1.0 This is the first version.
 
 ; these metadata can be empty, they will eventually become mandatory.
 homepage=
 icon=icon.png
-
 experimental=True
 deprecated=False
 qgisMaximumVersion=
