@@ -6,13 +6,29 @@ from actions import *
 from resources import *
 
 class Gjko: 
+    """
+    This is the entry point of Gjko-plugin. 
+    QGIS will load this class and call different interface method on this class.
 
+    Internally this class load two set of Action. The main action that are the main purpose of this plugin
+    and tools action.
+    """
+
+    """ Menus """
     menu = None
     tool_menu = None
+    """ Main actions set. """
     actions = []
+    """ Tool actions set. """
     tool_actions = []
 
     def __init__(self, iface):
+        """
+        Constructor of Gjko plugin.
+
+        :param iface interface to QGIS instance.
+        """
+        
         menuName = "&Municipal Energy Model"
         self.menu = QMenu(iface.mainWindow())
         self.menu.setObjectName("gjkoMenu")
@@ -21,7 +37,6 @@ class Gjko:
         self.tool_menu = QMenu(iface.mainWindow())
         self.tool_menu.setObjectName("gjkoToolMenu")
         self.tool_menu.setTitle(menuToolName)
-
 
         # Save reference to the QGIS interface
         self.iface = iface
