@@ -2,31 +2,26 @@ from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry
 from PyQt4.QtCore import *
 
 """
-This file contains definition of fields, layers used accross this plugin.
+This file contains declaration of fields and layers used by this plugin.
+
 """
 
-""" FEATURE FIELD """
-FIELD_CODCAT = 'COD_CATAST'
-FIELD_VOLUME_HEIGHT = 'UN_VOL_AV'
-FIELD_CERT_CODCAT = 'UN_VOL_AV'
-FIELD_CERT_EPOCH = 'UN_VOL_AV'
-FIELD_ISTAT_EPOCH = 'UN_VOL_AV'
-FIELD_CADASTRE_TERRAIN_ID = 'CHIAVE'
-FIELD_CADASTRE_USAGE = 'USO'
-
-FIELD_CATID                     = 'ID_LR'
+""" 
+Following used fields from input data.
+"""
+FIELD_CODCAT                    = 'COD_CATAST'
+FIELD_VOLUME_HEIGHT             = 'UN_VOL_AV'
+FIELD_CADASTRE_TERRAIN_ID       = 'CHIAVE'
+FIELD_CADASTRE_USAGE            = 'USO'
 FIELD_AREA                      = 'AREA'
-FIELD_PERIMETER                 = 'PERIMETER'
 FIELD_HEIGHT                    = 'HEIGHT'
-FIELD_PERIMETER_ADJACENT        = 'PERIM_ABJ'
-FIELD_CODISTAT                  = 'COD_ISTAT'
-
 FIELD_SEZ_ISTAT                 = 'SEZ2011'
 FIELD_CSV_SEZ_AGE               = 'SEZ_AGE'
 
 
-# Final tables
-
+"""
+Field definition for generated layer.
+"""
 FIELD_ID_CADASTRE = 'ID_CAD'
 FIELD_ID_MEM      = 'ID_MEM' #9   identifier of the MEM building,  only buildings that presumably use heating and/or cooling
 FIELD_USE         = 'USE' #3   residential (E1) or non-residential (En1) building      
@@ -34,7 +29,6 @@ FIELD_ID_EPC      = 'ID_EPC' #6   identifier of EPCs data     USE + codice catas
 FIELD_TYPOLOGY    = 'TYPOLOGY' #8   identifier of compactness-age typology (serve compact_r e age)  A1, A2,
 FIELD_ID_ISTAT    = 'ID_ISTAT' #8   identifier of ISTAT zone
 FIELD_ID_OMI      = 'ID_OMI' #6   identifier of OMI zone    
-# = '' Energy fields   #    descrizione da dove note
 FIELD_FOOT_AREA        = 'FOOT_AREA' #4   footprint building area area   
 FIELD_FLOOR_AREA  = 'FLOOR_AREA' #10      (sommatoria un-vol_MEM)  
 FIELD_VOL_GROSS   = 'VOL_GROSS' #6       (sommatoria un-vol_MEM)  
@@ -72,6 +66,9 @@ FIELD_H_LEVEL = 'H_LEVEL'
 FIELD_N_LEVEL = 'N_LEVEL'
 FIELD_FLOOR_AREA = 'FLOOR_AREA'
 
+"""
+Layer definition.
+"""
 LAYER_BUILDING_FIELD = [ 
         QgsField(FIELD_ID_CADASTRE, QVariant.String),
         QgsField(FIELD_ID_MEM, QVariant.String),
@@ -107,6 +104,10 @@ LAYER_BUILDING_FIELD = [
         QgsField(FIELD_ST_AREA, QVariant.Double)
         ]
 
+
+"""
+Layer definition.
+"""
 LAYER_VOLUMES_FIELDS = [
         QgsField(FIELD_ID_CADASTRE, QVariant.String),
         #un-vol_MEM  identifier of the MEM volumetric unit
@@ -117,7 +118,6 @@ LAYER_VOLUMES_FIELDS = [
         #ID_ISTAT    identifier of ISTAT zone
         #ID_OMI  identifier of OMI zone
         QgsField(FIELD_ID_MEM, QVariant.String),     # identifier of the MEM building belongs to 
-#Energy Fields   descrizione
         QgsField(FIELD_HEIGHT, QVariant.Double),  # height of the volumetric unit
         QgsField(FIELD_AREA_GROSS, QVariant.Double),  # gross area
         QgsField(FIELD_VOL_GROSS, QVariant.Double),   # gross volume

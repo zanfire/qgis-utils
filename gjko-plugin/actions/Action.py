@@ -84,7 +84,7 @@ class Action(object):
         # create a new worker instance
         worker = Worker(self)
         
-        (self.message_bar, progressBar) = pyqt_helper.create_progress_bar(self.iface, "Thnkering ... :-P", worker)
+        (self.message_bar, progressBar) = pyqt_helper.create_progress_bar(self.iface, "Computing information ...", worker)
         # start the worker in a new thread
         thread = QtCore.QThread(worker)
         worker.moveToThread(thread)

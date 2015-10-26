@@ -110,9 +110,6 @@ class ComputeCompactRatioAction(Action):
                     feature[FIELD_ID_CADASTRE] = '-'.join(key.split('-')[1:])
                     feature[FIELD_ID_MEM] = id_mem
                     feature[FIELD_USE] = f[FIELD_USE]
-                    #features_temp[idx][FIELD_USE] = f[FIELD_TYPE_USAGE]
-                    #features_temp[idx][FIELD_CODCAT] = f[FIELD_CATID]
-                    #features_temp[idx][FIELD_ID_EPC] = ''
                     
                     feature[FIELD_FOOT_AREA] = 0
                     feature[FIELD_VOL_GROSS] = 0
