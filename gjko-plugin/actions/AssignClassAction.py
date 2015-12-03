@@ -71,8 +71,10 @@ class AssignClassAction(Action):
                 if epcs != None:
                     f[FIELD_ID_EPC] = id_epc
                     epc_age = self.epcs_csv.get_element(id_epc, 'age')
-                    if epc_age != None and epc_age != '':
+                    if epc_age != None and epc_age != '' and epc_age != f[FIELD_AGE]:
                         f[FIELD_AGE] = epc_age
+                        f[FIELD_TYPOLOGY] = code_generator.get_code(f[FIELD_USE], f[FIELD_AGE], f[FIELD_COMPACT_R])
+                    
                     self.assign_building_values(f, self.epcs_csv, id_epc)
                     
                 f[FIELD_FLOOR_AREA] = 0

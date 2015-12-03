@@ -1,3 +1,5 @@
+from qgis.core import *
+
 """
 
 ctess ratio             construction age               
@@ -35,7 +37,7 @@ def get_code(prefix, epoch_str, sv):
     if epoch_str == None or epoch_str == '':
         epoch = 0
     elif epoch_str.startswith('<=') or epoch_str.startswith('>='):
-        epoch = int(epoch_str[2:4])
+        epoch = int(epoch_str[2:6])
     else:
         epoch = int(epoch_str[:4])
 
@@ -46,7 +48,7 @@ def get_code(prefix, epoch_str, sv):
     elif epoch in range(1981, 1990): construction_age = 'D'          
     elif epoch in range(1991, 2005): construction_age = 'E' 
     else: construction_age = 'F' 
-    
+
     compactness = ''
     if sv <= 0.3: compactness = '1'
     elif sv > 0.3 and sv <= 0.4: compactness = '2'
