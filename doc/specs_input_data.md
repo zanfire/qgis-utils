@@ -5,7 +5,6 @@ The internal name of *Municipal Energy Model* plugin is *Gjko-plugin* sometimes 
 
 ![Overview image](img/intro.png)
 
-## Overview
 *Municipal Energy Model* plugin is a QGIS plugin and it need to be installed like any other plugin in QGIS
 
 ### Installation
@@ -22,11 +21,23 @@ For more information read [http://docs.qgis.org/1.8/en/docs/user_manual/plugins/
 ### Introduction
 When you have sucessfully installed *Municipal Energy Model* plugin under the menu `Plugins` you must see two additional options: `Municipal Energy Model` and `Municiapl Energy Model - tool`. The first option is the plugin itself with the main steps, the second option is a set of tools developed as side utility like checks and easy navigation through features.
 
-The final result of *Municipal Energy Model* plugin is a layer called **Buildning** [^1]. 
+The final result of *Municipal Energy Model* plugin is a layer called **Building** [^1]. During the processing is generated two additional layers called **SpatialJoin**[^1] and **Volumes**[^1].
 
-[^1]: This is the default name, you can change this name but in the document will be reffered as Building layer.
+### Step 1 - Assign ID_CAD
+The first step is open through `Plugins -> Municipal Energy Model -> 1 - Assign ID_CAD`. The inputs of this step are three layer, volumes layer, cadastre layer and cadastre terrain layer.
+The ouptut of this step is a layer called **SpatialJoin** containing the **Volumes layer** plus the cadastre identification code from  **Cadastre layer** or **Cadastre terrain layer**.
 
-## Step 1 - Assign ID_CAD
+ - **Volumes layer** must contain footprint of each building and each *feature* must have an attribute **UN\_VOL\_AV**[^2] that it provide height of each building/feature.
+
+ - **Cadastre layer** must contain the **COD_CATAST** attrbiute and each geometry must match as much as possible the volumes geometries. This layer will be  spatial joined with *volumes layer*.
+
+ - **Cadastre terrain layer** must contain the **CHIAVE**[^2][^3] attribute. This layer is used in the case that for a *feature* in *volumes layer* doesn't have a cadastre identification code in *cadastre layer* is used the terrain cadastre identification code.
+
+> Remark: **UN\_VOL\_AV** contain the heigh of described building. It is used in the follow step, so, if it is missing you will get an error in the follow step not this one.
+
+[^2]: Each attributes needed by Municipal Energy Model are defined in gjko-plugin/DEFINES.py file. You can locate your field and tune according your nomenclature.
+[^3]: This is a BAD name ...
+
 ![Step 1](img/step1.png)
 
 This step need the follow layers:
@@ -49,4 +60,7 @@ This step require the spatial join layer created in the previous step.
 
 This step create two separate layer
 
-## Data specification
+# Developer note
+[^1]: This is the default name that it is suggested. You can change this name as you wish.
+
+:octocat:
