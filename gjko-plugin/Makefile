@@ -16,5 +16,8 @@ compile: $(UI_FILESPY) $(RESOURCE_FILES)
 	pyuic4-2.7 -o $@ $<
 
 clean:
-	rm $(PYC_FILES)
-	rm $(UI_FILESPY)
+	rm -f $(PYC_FILES)
+	rm -f $(UI_FILESPY)
+
+package: clean compile
+	zip ../release.zip -r ../gjko-plugin
