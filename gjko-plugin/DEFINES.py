@@ -9,15 +9,18 @@ This file contains declaration of fields and layers used by this plugin.
 """ 
 Following used fields from input data.
 """
+""" Used """
 FIELD_CODCAT                    = 'COD_CATAST'
 FIELD_VOLUME_HEIGHT             = 'UN_VOL_AV'
 FIELD_CADASTRE_TERRAIN_ID       = 'CHIAVE'
 FIELD_CADASTRE_USAGE            = 'USO'
-FIELD_AREA                      = 'AREA'
-FIELD_HEIGHT                    = 'HEIGHT'
+""" Used in AssignClassAction.py """
 FIELD_SEZ_ISTAT                 = 'SEZ2011'
+""" Used to get age in ISTAT CSV file. """
 FIELD_CSV_SEZ_AGE               = 'SEZ_AGE'
 
+
+FIELD_HEIGHT                    = 'HEIGHT'
 
 """
 Field definition for generated layer.

@@ -112,5 +112,5 @@ class Action(object):
 
     def worker_error(self, e, exception_string): 
         QgsMessageLog.logMessage('Worker thread raised an exception:' + exception_string, level=QgsMessageLog.CRITICAL)
-        self.iface.messageBar().pushMessage('An error was occurred, expcetion:' + str(e), QgsMessageBar.CRITICAL)
+        self.iface.messageBar().pushMessage('An error was occurred, exception:' + str(e), QgsMessageBar.CRITICAL)
 
