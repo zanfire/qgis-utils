@@ -54,12 +54,44 @@ After this step you have these two layer that contains unfilled attribute that t
 
 This step fills **Volumes layer** and **Building layer** with the information provided by EPC and statistic data.
 
-This step need additional information: 
+This step need additional information
 
 - **ISTAT layer** is a layer containing the section and the ISTAT code **SEZ2011**. This code is needed to match for each building over the an ISTAT section and provide the code. This code is used in the **ISTAT age CSV file**. 
 - **EPCs CSV file** is a CSV file containing for each building the energy efficency values. Each field of CSV file must match the name used in the *Volumes layer* and *Building layer*.
 - **Typology CSV file** is a CSV file containing for each topology the statistic data. This is used if EPC data are not available.
 - **ISTAT age CSV file** is a CSV file that provide statistic **age** for a building in the ISTAT section.
+
+## Data specification
+In this chapter we provide more datail about how data must be formatted to be readable for **Municipal Energy Model** plugin.
+
+### CSV file format
+CSV file are text file where values are separated by comma. In *Municipal Energy Model* plugin the first row of each CSV file have a special meaning. The first row is used as header. 
+In this way the plugin can look for specific field searching for the header name instad of position.
+
+### ISTAT age CSV file
+
+```
+SEZ2011,SEZ_AGE
+152060000001,1946-1960
+152060000002,<=1945
+152060000027,>=2006
+```
+
+ - **SEZ2011** is the ISTAT identification number provided in the **ISTAT layer**.
+ - **SEZ_AGE** is a text field containing >=[year], <=[year] or [year]-[year].
+
+### Typology CSV file
+```
+TYPOLOGY,wind_r,area_r,vol_r,h_level,U_env,U_roof,U_ground,U_wind,Eph,Eth,ETC,EFER,EPW,EPT,E_HEAT,E_DHW,E_H-DHW
+E1-A-1,0.08,0.75,0.49,3.11,1.22,1.12,1.16,3.44,183.35,141.46,16.79,3.89,45.99,229.33,0.80,0.68,0.74
+```
+
+### ID_EPC CSV file
+
+```
+ID_EPC,Count of CODICE_IDENTIFICATIVO_PRATICA,SUP_NETTA|VOLUME_NETTO,AGE,wind_r,area_r,vol_r,h_level,U_env,U_roof,U_ground,U_wind,Eph,Eth,ETC,EFER,EPW,EPT,E_HEAT,E_DHW,E_H-DHW,PV_AREA,ST_AREA
+E1-10-1234,6,515.36,1991-2005,0.131,0.851,0.747,2.59,0.70,0.74,0.83,3.05,131.34,75.02,18.09,0.00,60.44,191.78,0.58,0.38,0.52,0.00,0.00
+```
 
 
 [^1]: This is the default name that it is suggested. You can change this name as you wish.
