@@ -55,12 +55,11 @@ After this step you have these two layer that contains unfilled attribute that t
 This step fills **Volumes layer** and **Building layer** with the information provided by EPC and statistic data.
 
 This step need additional information: 
- - ISTAT layer
- - EPCs CSV file
- - Typology CSV file
- - ISTAT age CSV file
- - 
-# Developer note
+
+- **ISTAT layer** is a layer containing the section and the ISTAT code **SEZ2011**. This code is needed to match for each building over the an ISTAT section and provide the code. This code is used in the **ISTAT age CSV file**. 
+- **EPCs CSV file** is a CSV file containing for each building the energy efficency values. Each field of CSV file must match the name used in the *Volumes layer* and *Building layer*.
+- **Typology CSV file** is a CSV file containing for each topology the statistic data. This is used if EPC data are not available.
+- **ISTAT age CSV file** is a CSV file that provide statistic **age** for a building in the ISTAT section.
 
 
 [^1]: This is the default name that it is suggested. You can change this name as you wish.
