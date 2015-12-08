@@ -1,5 +1,5 @@
 # User manual
-#### Author note
+##### Author note #####
  - *This work is based on real samples from Italy. So, nomenclature and specific data must be adapted to your country/scenario. This requires change to the gjko-plugin source code.*</br>
  - *This document provide a brief description without going deep in the terminology. You must read the PhD. Thesis __TITLE__ of Giulia Pasetti.*
  - *This work is an application of work of Giulia Pasetti PhD thesis.*
@@ -26,29 +26,34 @@ For more information about QGIS plugin read [http://docs.qgis.org/1.8/en/docs/us
 ### Introduction
 When you have successfully installed *Municipal Energy Model* plugin, you should see under the menu `Plugins` two additional options: `Municipal Energy Model` and `Municipal Energy Model - tool`. The first menu entry is the plugin itself with the main steps, the second menu entry is a set of tools developed as side utilities.
 
-## Municipal Energy Model - Tool
+## Municipal Energy Model
 
 The output of *Municipal Energy Model* plugin is a **Building** and **Volumes** layers.
 
-The user need to go though each step to obtain the final layers. These steps are `1 - Assign ID_CAD`, `2 - Create energy layers` and `3 - Assign EPC and Typology`. 
+The user need to go though each step to obtain the final layers. These steps are `1 - Assign ID_CAD`, `2 - Create energy layers` and `3 - Assign EPC and Typology`.
+
+The first step is from layer provided by the DBT (Database Topografico Regionale) to assing the cadastre identification number.
+In the step 2 we elaborate data from step 1 to identificate building and each volumes of the same building. We also perform the computation of compactness ratio and detect wall surfaces.
+In the final step 3 we fill each building/volumes with energy efficency values.
 
 ### Step 1 - Assign ID_CAD
 
-![Step 1](img/step1.png)
+![](img/step1.png)
 
 The first step is open through `Plugins` `->` `Municipal Energy Model` `->` `1 - Assign ID_CAD`. The inputs of this step are three layer, volumes layer, cadastre layer and cadastre terrain layer.
 The ouptut of this step is a layer called **SpatialJoin** containing the **Volumes layer** plus the cadastre identification code from  **Cadastre layer** or **Cadastre terrain layer**.
 
- - **Volumes layer** must contain footprint of each building and each *feature* must have an attribute **UN\_VOL\_AV**[^2] that it provide height of each building/feature. This layer should also contain **USE** attribute.
+ - **Volumes layer** must contain footprint of each building and each *feature* must have an attribute **UN\_VOL\_AV** that it provide height of each building/feature. This layer should also contain **USE** attribute.
  - **Cadastre layer** must contain the **COD_CATAST** attribute and each geometry must match as much as possible the volumes geometries. This layer will be  spatial joined with *volumes layer*.
- - **Cadastre terrain layer** must contain the **CHIAVE**[^2][^3] attribute. This layer is used in the case that for a *feature* in *volumes layer* doesn't have a cadastre identification code in *cadastre layer* is used the terrain cadastre identification code.
+ - **Cadastre terrain layer** must contain the **CHIAVE** attribute. This layer is used in the case that for a *feature* in *volumes layer* doesn't have a cadastre identification code in *cadastre layer* is used the terrain cadastre identification code.
 
 > Remark: **UN\_VOL\_AV** contain the height of described building. It is used in the follow step, so, if it is missing you will get an error in the following step.
 > 
 > Note: If a *feature* in *Volumes layer* covers multiple *feature* of *Cadastre layer* or *Cadastre terrain layer* it assigned the value from the *feature* that have the biggest common area.
 
 ### Step 2 - Create energy layers
-![Step 2](img/step2.png)
+
+![](img/step2.png)
 
 This step creates **Volumes layer** and **Building layer**. **Volumes layer**
  contains the volume information of a building. For example: a build is composed by two volumes with different height. 
@@ -56,8 +61,13 @@ This step creates **Volumes layer** and **Building layer**. **Volumes layer**
 
 After this step you have these two layer that contains unfilled attribute that they will be filled in the next step.
 
+During this step is performed the follow computation: extimating the wall surface, computing compact ratio.
+
+To debug the the wall surface is correct you could enable the generation of temporary layer intersection. This layer is filled with the segment that are considered common part of the same building. They are the intersection of each volume of the same building.
+
 ### Step 3 - Assign EPC and Typology
-![Step 3](img/step3.png)
+
+![](img/step3.png)
 
 This step fills **Volumes layer** and **Building layer** with the information provided by EPC and statistic data.
 
@@ -133,14 +143,13 @@ This menu entry open a dialog that allow a spatial join with a custom criteria. 
 
 The particularity of this spatial join is that in case of a *feature* of *layer 1* cover two or more *features* of *layer 2* will be used the *feature* from *layer 2* that have biggest common area with *feature* of *layer 1*.
 
+
+
 #### Definition ####
  * EPC: Energy Performance Certificates
  * MEM: Municipal Energy Model
  * ISTAT: Istituto Nazionale di Statistica - National Institute of Statistics (Italy)
+ * DBT: [Database Topografico Regionale](http://www.territorio.regione.lombardia.it/cs/Satellite?c=Page&childpagename=DG_Territorio%2FDGLayout&cid=1213277392613&p=1213277392613&pagename=DG_TERRWrapper)
 
-#### Notes ####
-<sup>1</sup>: This is the default name that it is suggested. You can change this name as you wish.</br>
-<sup>2</sup>: Each attributes needed by Municipal Energy Model are defined in gjko-plugin/DEFINES.py file. You can locate your field and tune according your nomenclature.</br>
-<sup>3</sup>: This is a BAD name ...</br>
 
 :octocat:
