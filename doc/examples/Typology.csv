@@ -1,0 +1,2 @@
+TYPOLOGY,wind_r,area_r,vol_r,h_level,U_env,U_roof,U_ground,U_wind,Eph,Eth,ETC,EFER,EPW,EPT,E_HEAT,E_DHW,E_H-DHW
+E1-A-1,0.08,0.75,0.49,3.11,1.22,1.12,1.16,3.44,183.35,141.46,16.79,3.89,45.99,229.33,0.80,0.68,0.74
