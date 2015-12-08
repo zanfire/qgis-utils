@@ -134,10 +134,11 @@ This menu entry open a dialog that allow a spatial join with a custom criteria. 
 The particularity of this spatial join is that in case of a *feature* of *layer 1* cover two or more *features* of *layer 2* will be used the *feature* from *layer 2* that have biggest common area with *feature* of *layer 1*.
 
 #### Definition ####
- *[EPC]: Energy Performance Certificates
- *[MEM]: Municipal Energy Model
- *[ISTAT]: Istituto Nazionale di Statistica - National Institute of Statistics (Italy)
+ * EPC: Energy Performance Certificates
+ * MEM: Municipal Energy Model
+ * ISTAT: Istituto Nazionale di Statistica - National Institute of Statistics (Italy)
 
+#### Notes ####
 <sup>1</sup>: This is the default name that it is suggested. You can change this name as you wish.</br>
 <sup>2</sup>: Each attributes needed by Municipal Energy Model are defined in gjko-plugin/DEFINES.py file. You can locate your field and tune according your nomenclature.</br>
 <sup>3</sup>: This is a BAD name ...</br>
